@@ -1,6 +1,12 @@
 {
   "books": [
     {
+      "id": "introduction-to-kotlin",
+      "title": "Introduction to Kotlin",
+      "author": "Pocket guide · 26 pages",
+      "file": "books/Introduction_to_Kotlin.pdf"
+    },
+    {
       "id": "kotlin-fundamentals",
       "title": "Kotlin Fundamentals",
       "author": "Pocket guide · 42 pages",
