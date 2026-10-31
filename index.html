@@ -40,23 +40,37 @@ body {
 }
 #library h1 { margin: 0 0 4px; font-size: 26px; letter-spacing: -.01em; }
 #library .sub { margin: 0 0 18px; color: var(--muted); font-size: 14px; }
-#list { display: grid; gap: 10px; }
+#list {
+  display: grid; gap: 18px 14px;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+}
 .book {
-  display: grid; grid-template-columns: 44px 1fr auto; align-items: center; gap: 14px;
-  width: 100%; text-align: left; color: inherit; font: inherit;
-  background: var(--card); border: 1px solid var(--line); border-radius: 14px;
-  padding: 12px 14px; cursor: pointer;
+  display: flex; flex-direction: column; gap: 8px; min-width: 0;
+  width: 100%; padding: 0; text-align: left; color: inherit; font: inherit;
+  background: none; border: 0; cursor: pointer;
 }
-.book:active { transform: scale(.985); }
-.book:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.spine {
-  width: 44px; height: 58px; border-radius: 4px 7px 7px 4px;
-  display: grid; place-items: center; font-weight: 700; font-size: 18px; color: #fff;
-  box-shadow: inset 4px 0 0 rgba(0,0,0,.18);
+.book:active .cover { transform: scale(.97); }
+.book:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 10px; }
+.cover {
+  position: relative; width: 100%; max-width: 100%; aspect-ratio: 3 / 4;
+  border-radius: 6px 10px 10px 6px; overflow: hidden;
+  display: grid; place-items: center;
+  font-weight: 700; font-size: 34px; color: rgba(255,255,255,.92);
+  box-shadow: 0 10px 24px rgba(0,0,0,.45), inset 5px 0 0 rgba(0,0,0,.18);
+  transition: transform .15s ease;
 }
-.book .t { font-weight: 650; min-width: 0; overflow-wrap: anywhere; }
-.book .a { color: var(--muted); font-size: 13px; margin-top: 2px; }
-.book .go { color: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.cover img {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; object-position: top center;
+  background: #fff; opacity: 0; transition: opacity .3s ease;
+}
+.cover img.on { opacity: 1; }
+.cover::after {           /* spine shading over the page image */
+  content: ""; position: absolute; inset: 0 auto 0 0; width: 7px;
+  background: linear-gradient(90deg, rgba(0,0,0,.28), rgba(0,0,0,0));
+}
+.book .t { font-weight: 650; font-size: 14px; line-height: 1.3; overflow-wrap: anywhere; }
+.book .a { color: var(--muted); font-size: 12px; margin-top: -4px; }
 .empty { color: var(--muted); padding: 24px 0; }
 
 /* ---------- reader ---------- */
@@ -282,6 +296,55 @@ body.calm #rail { opacity: .35; }
       .then(function (j) { books = (j && j.books) || []; return books; });
   }
 
+  /* ---- covers: the first page of each PDF, cached on the device ---- */
+  var thumbQueue = [], thumbBusy = false, thumbWorker = null;
+  function thumbKey(b) { return 'thumb_v1_' + b.id + '_' + b.file; }
+  function setCover(img, src) {
+    img.onload = function () { img.classList.add('on'); };
+    img.src = src;
+  }
+  function queueThumb(b, img) { thumbQueue.push({ b: b, img: img }); nextThumb(); }
+  function nextThumb() {
+    if (thumbBusy || !thumbQueue.length || !reader.hidden) return;   // pause while a book is open
+    thumbBusy = true;
+    var job = thumbQueue.shift(), b = job.b;
+    try { if (!thumbWorker) thumbWorker = new lib.PDFWorker(); } catch (e) {}
+    var opts = { url: b.file, disableAutoFetch: true, disableStream: true };
+    if (thumbWorker) opts.worker = thumbWorker;
+    var task = lib.getDocument(opts), d = null;
+    task.promise.then(function (pdf) {
+      d = pdf;
+      return pdf.getPage(1);
+    }).then(function (page) {
+      var v1 = page.getViewport({ scale: 1 });
+      var scale = (320 * Math.min(window.devicePixelRatio || 1, 2)) / v1.width;
+      var vp = page.getViewport({ scale: scale });
+      var c = document.createElement('canvas');
+      c.width = Math.floor(vp.width); c.height = Math.floor(vp.height);
+      var ctx = c.getContext('2d');
+      ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.width, c.height);
+      return page.render({ canvasContext: ctx, viewport: vp }).promise.then(function () {
+        var url = c.toDataURL('image/jpeg', 0.8);
+        c.width = 0; c.height = 0;
+        setCover(job.img, url);
+        try { localStorage.setItem(thumbKey(b), url); } catch (e) {}
+      });
+    }).catch(function () { /* keep the colored placeholder */ })
+      .then(function () {
+        if (d) d.destroy();
+        thumbBusy = false;
+        setTimeout(nextThumb, 30);
+      });
+  }
+  var coverObserver = ('IntersectionObserver' in window) ? new IntersectionObserver(function (entries) {
+    entries.forEach(function (en) {
+      if (!en.isIntersecting) return;
+      coverObserver.unobserve(en.target);
+      var b = en.target._book, img = en.target.querySelector('img');
+      queueThumb(b, img);
+    });
+  }, { rootMargin: '300px 0px' }) : null;
+
   function renderLibrary() {
     list.innerHTML = '';
     libSub.textContent = books.length === 1 ? '1 book' : books.length + ' books';
@@ -289,19 +352,28 @@ body.calm #rail { opacity: .35; }
     books.forEach(function (b, i) {
       var btn = document.createElement('button');
       btn.type = 'button'; btn.className = 'book';
-      var spine = document.createElement('div');
-      spine.className = 'spine';
-      spine.style.background = COLORS[i % COLORS.length];
-      spine.textContent = (b.title || '?').trim().charAt(0).toUpperCase();
-      var text = document.createElement('div');
-      text.style.minWidth = '0';
+      btn.setAttribute('aria-label', b.title || b.id);
+      var cover = document.createElement('div');
+      cover.className = 'cover';
+      cover.style.background = COLORS[i % COLORS.length];
+      cover.textContent = (b.title || '?').trim().charAt(0).toUpperCase();
+      var img = document.createElement('img');
+      img.alt = ''; img.decoding = 'async';
+      cover.appendChild(img);
+      cover._book = b;
       var t = document.createElement('div'); t.className = 't'; t.textContent = b.title || b.id;
-      text.appendChild(t);
-      if (b.author) { var a = document.createElement('div'); a.className = 'a'; a.textContent = b.author; text.appendChild(a); }
-      var go = document.createElement('div'); go.className = 'go'; go.textContent = 'Read';
-      btn.appendChild(spine); btn.appendChild(text); btn.appendChild(go);
+      btn.appendChild(cover); btn.appendChild(t);
+      if (b.author) { var a = document.createElement('div'); a.className = 'a'; a.textContent = b.author; btn.appendChild(a); }
       btn.addEventListener('click', function () { openBook(b, true); });
       list.appendChild(btn);
+
+      // cover image: custom "cover" from books.json, else cached first page, else render it
+      var cached = null;
+      try { cached = localStorage.getItem(thumbKey(b)); } catch (e) {}
+      if (b.cover) setCover(img, b.cover);
+      else if (cached) setCover(img, cached);
+      else if (coverObserver) coverObserver.observe(cover);
+      else queueThumb(b, img);
     });
   }
 
@@ -424,6 +496,7 @@ body.calm #rail { opacity: .35; }
     document.body.classList.remove('calm');
     if (inTelegram) { try { tg.BackButton.hide(); } catch (e) {} }
     if (!books.length) fetchBooks().then(renderLibrary).catch(function () {});
+    setTimeout(nextThumb, 300);
   }
   backBtn.addEventListener('click', closeBook);
   if (inTelegram) { try { tg.BackButton.onClick(function () { if (zoomed) closeZoom(); else closeBook(); }); } catch (e) {} }
