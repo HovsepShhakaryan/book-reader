@@ -44,7 +44,10 @@ body {
   position: fixed; inset: 0; overflow-y: auto;
   padding: calc(var(--top) + 20px) max(16px, env(safe-area-inset-right, 0px)) calc(var(--bottom) + 24px) max(16px, env(safe-area-inset-left, 0px));
   -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;            /* hide the scroll bar (Firefox) */
+  -ms-overflow-style: none;
 }
+#library::-webkit-scrollbar { display: none; width: 0; height: 0; }   /* hide it (Chrome, Safari, Telegram) */
 #library h1 { margin: 0 0 4px; font-size: 26px; letter-spacing: -.01em; }
 #library .sub { margin: 0 0 18px; color: var(--muted); font-size: 14px; }
 #list {
