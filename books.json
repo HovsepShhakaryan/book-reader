@@ -1,10 +1,34 @@
 {
   "books": [
     {
-      "id": "sample",
-      "title": "Sample book",
-      "author": "Book Reader",
-      "file": "books/sample.pdf"
+      "id": "kotlin-fundamentals",
+      "title": "Kotlin Fundamentals",
+      "author": "Pocket guide · 41 pages",
+      "file": "books/Kotlin_Fundamentals.pdf"
+    },
+    {
+      "id": "kotlin-for-android",
+      "title": "Kotlin for Android",
+      "author": "Pocket guide · 54 pages",
+      "file": "books/Kotlin_for_Android.pdf"
+    },
+    {
+      "id": "jetpack-compose",
+      "title": "Jetpack Compose",
+      "author": "Pocket guide · 68 pages",
+      "file": "books/Jetpack_Compose.pdf"
+    },
+    {
+      "id": "android-platform",
+      "title": "Android Platform with Compose",
+      "author": "Pocket guide · 68 pages",
+      "file": "books/Android_Platform_with_Compose.pdf"
+    },
+    {
+      "id": "modern-android-architecture",
+      "title": "Modern Android Architecture",
+      "author": "Pocket guide · 68 pages",
+      "file": "books/Modern_Android_Architecture.pdf"
     }
   ]
 }
