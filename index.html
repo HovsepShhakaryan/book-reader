@@ -80,7 +80,31 @@ body {
 .book .a { color: var(--muted); font-size: 12px; margin-top: -4px; }
 .empty { color: var(--muted); padding: 24px 0; }
 .lib-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
-.lib-head > div { min-width: 0; }
+.lib-head h1 { min-width: 0; }
+.lib-tools { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 0 18px; }
+#library .lib-tools .sub { margin: 0; }
+.view-toggle { display: flex; padding: 3px; gap: 2px; border-radius: 10px; background: var(--card); border: 1px solid var(--line); }
+.view-toggle button {
+  display: grid; place-items: center; width: 36px; height: 30px; border: 0; border-radius: 7px;
+  background: transparent; color: var(--muted); cursor: pointer;
+}
+.view-toggle button[aria-pressed="true"] { background: rgba(91,140,255,.18); color: var(--accent); }
+.view-toggle button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+/* list view */
+#list.as-list { grid-template-columns: 1fr; gap: 10px; }
+#list.as-list .book {
+  display: grid; grid-template-columns: 52px 1fr; column-gap: 14px; row-gap: 3px; align-items: center;
+  background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 10px 12px;
+}
+#list.as-list .cover {
+  grid-row: 1 / span 2; width: 52px; font-size: 18px; border-radius: 3px 6px 6px 3px;
+  box-shadow: 0 4px 10px rgba(0,0,0,.4), inset 3px 0 0 rgba(0,0,0,.18);
+}
+#list.as-list .cover::after { width: 4px; }
+#list.as-list .t { align-self: end; font-size: 15px; }
+#list.as-list .a { align-self: start; margin-top: 0; }
+#list.as-list .book > .t:last-child { grid-row: 1 / span 2; align-self: center; }
 #homeBtn {
   flex: none; display: inline-flex; align-items: center; gap: 7px;
   font: 600 13px system-ui, -apple-system, sans-serif; color: #fff;
@@ -88,12 +112,52 @@ body {
   padding: 9px 13px; margin-top: 2px; cursor: pointer;
 }
 #homeBtn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
-#installHelp {
-  margin: 0 0 18px; padding: 12px 14px; border-radius: 12px;
-  background: var(--card); border: 1px solid var(--line); font-size: 14px;
+#sheetBack {
+  position: fixed; inset: 0; z-index: 50; background: rgba(0,0,0,.55);
+  display: flex; align-items: flex-end; justify-content: center;
 }
-#installHelp b { color: var(--fg); }
-#installHelp small { display: block; margin-top: 6px; color: var(--muted); }
+#sheet {
+  width: 100%; max-width: 480px; background: var(--card); border: 1px solid var(--line); border-bottom: 0;
+  border-radius: 20px 20px 0 0;
+  padding: 20px max(18px, env(safe-area-inset-right, 0px)) calc(var(--bottom) + 18px) max(18px, env(safe-area-inset-left, 0px));
+  animation: sheetUp .22s ease;
+}
+@keyframes sheetUp { from { transform: translateY(40px); opacity: 0 } to { transform: none; opacity: 1 } }
+#sheet h2 { margin: 0 0 4px; font-size: 19px; }
+#sheet .lead { margin: 0 0 16px; color: var(--muted); font-size: 14px; }
+#sheet ol { list-style: none; margin: 0 0 18px; padding: 0; display: grid; gap: 12px; }
+#sheet li { display: grid; grid-template-columns: 30px 1fr; gap: 12px; align-items: center; font-size: 15px; }
+#sheet li .n {
+  width: 30px; height: 30px; border-radius: 999px; display: grid; place-items: center;
+  background: rgba(91,140,255,.18); color: var(--accent); font-weight: 700; font-size: 14px;
+}
+#sheet li svg { vertical-align: -4px; margin: 0 2px; }
+#sheet .note { margin: -6px 0 16px; color: var(--muted); font-size: 13px; }
+#sheet .row { display: flex; gap: 10px; }
+#sheet button {
+  flex: 1; font: 600 15px system-ui, -apple-system, sans-serif; border-radius: 12px; padding: 13px; cursor: pointer;
+  border: 1px solid var(--line); background: transparent; color: var(--fg);
+}
+#sheet button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+#sheet .urlbox {
+  display: block; margin: 0 0 16px; padding: 10px 12px; border-radius: 10px;
+  background: var(--ink); border: 1px solid var(--line); font-size: 13px; color: var(--fg);
+  overflow-wrap: anywhere; -webkit-user-select: all; user-select: all;
+}
+#sheet .opts { display: grid; gap: 10px; margin: 0 0 16px; }
+#sheet .opt {
+  display: grid; grid-template-columns: 44px 1fr 16px; align-items: center; gap: 14px;
+  width: 100%; text-align: left; text-decoration: none; color: var(--fg);
+  background: var(--ink); border: 1px solid var(--line); border-radius: 14px; padding: 14px;
+  font: inherit; cursor: pointer;
+}
+#sheet .opt:active { transform: scale(.985); }
+#sheet .opt .ic { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; }
+#sheet .opt b { display: block; font-size: 16px; }
+#sheet .opt small { display: block; color: var(--muted); font-size: 13px; margin-top: 2px; line-height: 1.35; }
+#sheet .opt .chev { color: var(--muted); }
+#sheet .copy { margin: -8px 0 16px; width: auto; flex: none; padding: 9px 14px; font-size: 14px; }
+@media (prefers-reduced-motion: reduce) { #sheet { animation: none; } }
 
 /* ---------- reader ---------- */
 #reader { position: fixed; inset: 0; background: var(--ink); }
@@ -195,16 +259,23 @@ body.calm #rail { opacity: .35; }
 
 <main id="library">
   <div class="lib-head">
-    <div>
-      <h1 id="libTitle">Library</h1>
-      <p class="sub" id="libSub">Loading books…</p>
-    </div>
+    <h1 id="libTitle">Library</h1>
     <button id="homeBtn" type="button" hidden>
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-      Home Screen
+      Get app
     </button>
   </div>
-  <div id="installHelp" hidden></div>
+  <div class="lib-tools">
+    <p class="sub" id="libSub">Loading books…</p>
+    <div class="view-toggle" role="group" aria-label="Library view">
+      <button type="button" id="viewGrid" aria-label="Grid view" aria-pressed="true">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></svg>
+      </button>
+      <button type="button" id="viewList" aria-label="List view" aria-pressed="false">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 6h11M9 12h11M9 18h11"/><rect x="3.5" y="4.5" width="3" height="3" rx=".8" fill="currentColor" stroke="none"/><rect x="3.5" y="10.5" width="3" height="3" rx=".8" fill="currentColor" stroke="none"/><rect x="3.5" y="16.5" width="3" height="3" rx=".8" fill="currentColor" stroke="none"/></svg>
+      </button>
+    </div>
+  </div>
   <div id="list"></div>
 </main>
 
@@ -236,6 +307,17 @@ body.calm #rail { opacity: .35; }
 
 <div id="toast" hidden></div>
 
+<div id="sheetBack" hidden>
+  <div id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+    <h2 id="sheetTitle">Add Books to your Home Screen</h2>
+    <p class="lead" id="sheetLead">It opens full screen, like a normal app.</p>
+    <div id="sheetBody"></div>
+    <div class="row" id="sheetRow">
+      <button type="button" id="sheetClose" class="primary">Got it</button>
+    </div>
+  </div>
+</div>
+
 <script src="lib/pdf.min.js"></script>
 <script>
 (function () {
@@ -243,6 +325,7 @@ body.calm #rail { opacity: .35; }
 
   /* ======================= settings ======================= */
   var LIBRARY_TITLE = 'Library';          // heading on the book list
+  var TELEGRAM_LINK = 'https://t.me/SwipeBooks_bot/read';   // your bot's Mini App link
   var ZOOM = 2.5;                          // double-tap zoom factor
   var MAX_PIXELS = 12e6;                   // canvas size limit for phones
   var COLORS = ['#2E5BFF', '#E0457B', '#13A88A', '#F2A20C', '#7B4DE0', '#0EA5C6', '#D9534F'];
@@ -407,6 +490,19 @@ body.calm #rail { opacity: .35; }
       else queueThumb(b, img);
     });
   }
+
+  /* grid / list switch, remembered on this device */
+  var viewGrid = $('viewGrid'), viewList = $('viewList');
+  function setView(v) {
+    var isList = v === 'list';
+    list.classList.toggle('as-list', isList);
+    viewGrid.setAttribute('aria-pressed', String(!isList));
+    viewList.setAttribute('aria-pressed', String(isList));
+    try { localStorage.setItem('libraryView', v); } catch (e) {}
+  }
+  viewGrid.addEventListener('click', function () { setView('grid'); });
+  viewList.addEventListener('click', function () { setView('list'); });
+  (function () { var v = 'grid'; try { v = localStorage.getItem('libraryView') || 'grid'; } catch (e) {} setView(v); })();
 
   /* ======================= reader state ======================= */
   var doc = null, sizes = [], slides = [], current = 0, zoomed = false, token = 0, book = null, cameFromLibrary = false;
@@ -652,8 +748,9 @@ body.calm #rail { opacity: .35; }
     }, 150);
   });
 
-  /* ======================= add to home screen ======================= */
-  var homeBtn = $('homeBtn'), installHelp = $('installHelp');
+  /* ======================= get the app: Telegram or Home Screen ======================= */
+  var homeBtn = $('homeBtn');
+  var SITE_URL = location.origin + location.pathname;
   var standalone = false;
   try {
     standalone = window.matchMedia('(display-mode: fullscreen)').matches ||
@@ -663,30 +760,139 @@ body.calm #rail { opacity: .35; }
   var installPrompt = null;
   window.addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); installPrompt = e; });
 
-  if (inTelegram && tgAtLeast('8.0') && tg.addToHomeScreen) {
-    // inside Telegram: a home-screen icon that opens this Mini App
-    try {
-      tg.checkHomeScreenStatus(function (status) {
-        if (status !== 'added' && status !== 'unsupported') homeBtn.hidden = false;
-      });
-      tg.onEvent('homeScreenAdded', function () { homeBtn.hidden = true; });
-    } catch (e) {}
-    homeBtn.addEventListener('click', function () { try { tg.addToHomeScreen(); } catch (e) {} });
-  } else if (!inTelegram && !standalone) {
-    // in a phone browser: install the site as its own app
+  var ua = navigator.userAgent;
+  var ios = /iPhone|iPad|iPod/i.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  var inAppBrowser = !inTelegram && /Instagram|FBAN|FBAV|Line\/|Telegram|WhatsApp|TikTok|Snapchat|; wv\)/i.test(ua);
+  var tgShortcut = false;   // can Telegram add its own Home Screen shortcut?
+
+  var sheetBack = $('sheetBack'), sheetBody = $('sheetBody'), sheetLead = $('sheetLead');
+  var sheetTitle = $('sheetTitle'), sheetRow = $('sheetRow');
+  function closeSheet() { sheetBack.hidden = true; }
+  sheetBack.addEventListener('click', function (e) { if (e.target === sheetBack) closeSheet(); });
+
+  var ICON_SHARE = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5b8cff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 8l5-5 5 5"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg>';
+  var ICON_ADD = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5b8cff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M12 8v8M8 12h8"/></svg>';
+  var ICON_DOTS_V = '<svg width="20" height="20" viewBox="0 0 24 24" fill="#5b8cff"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>';
+  var ICON_DOTS_H = '<svg width="20" height="20" viewBox="0 0 24 24" fill="#5b8cff"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>';
+  var ICON_TG = '<span class="ic" style="background:#2AABEE"><svg width="24" height="24" viewBox="0 0 24 24" fill="#fff"><path d="M21.5 4.3 18.4 19c-.2 1-.8 1.3-1.7.8l-4.6-3.4-2.2 2.1c-.3.3-.5.5-1 .5l.3-4.7 8.6-7.8c.4-.3-.1-.5-.6-.2L6.6 13 2 11.6c-1-.3-1-1 .2-1.5l18-6.9c.8-.3 1.6.2 1.3 1.1z"/></svg></span>';
+  var ICON_PHONE = '<span class="ic" style="background:#5b8cff"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="3"/><path d="M12 9v6M9 12h6"/></svg></span>';
+  var CHEV = '<svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>';
+
+  function steps(list) {
+    return '<ol>' + list.map(function (t, i) { return '<li><span class="n">' + (i + 1) + '</span><span>' + t + '</span></li>'; }).join('') + '</ol>';
+  }
+  function buttons(list) {   // [{label, primary, onClick}]
+    sheetRow.innerHTML = '';
+    list.forEach(function (b) {
+      var el = document.createElement('button');
+      el.type = 'button'; el.textContent = b.label;
+      if (b.primary) el.className = 'primary';
+      el.addEventListener('click', b.onClick);
+      sheetRow.appendChild(el);
+    });
+  }
+  function copyAddress(btn) {
+    var done = function () { btn.textContent = 'Copied'; setTimeout(function () { btn.textContent = 'Copy address'; }, 2000); };
+    try { navigator.clipboard.writeText(SITE_URL).then(done, function () {}); } catch (e) {}
+    var box = sheetBody.querySelector('.urlbox');
+    if (box && window.getSelection) { var r = document.createRange(); r.selectNodeContents(box); var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r); }
+  }
+
+  /* screen 1: the two choices */
+  function showChoices() {
+    sheetTitle.textContent = 'How do you want to read?';
+    sheetLead.textContent = 'Pick one. You can always use the other later.';
+    var tgTitle, tgText;
+    if (inTelegram) {
+      tgTitle = 'Telegram shortcut';
+      tgText = 'An icon on your Home Screen that opens this Library in Telegram.';
+    } else {
+      tgTitle = 'Open in Telegram';
+      tgText = 'Read inside Telegram. Your place in each book is saved in your account.';
+    }
+    var html = '<div class="opts">';
+    if (!inTelegram || tgShortcut) {
+      html += (inTelegram ? '<button type="button" class="opt" id="optTg">' : '<a class="opt" id="optTg" href="' + TELEGRAM_LINK + '">') +
+        ICON_TG + '<span><b>' + tgTitle + '</b><small>' + tgText + '</small></span>' + CHEV +
+        (inTelegram ? '</button>' : '</a>');
+    }
+    html += '<button type="button" class="opt" id="optHome">' + ICON_PHONE +
+      '<span><b>Add to Home Screen</b><small>A separate app. Opens full screen, no Telegram needed.</small></span>' + CHEV + '</button>';
+    html += '</div>';
+    sheetBody.innerHTML = html;
+    buttons([{ label: 'Cancel', onClick: closeSheet }]);
+
+    var optTg = $('optTg');
+    if (optTg && inTelegram) optTg.addEventListener('click', function () { closeSheet(); try { tg.addToHomeScreen(); } catch (e) {} });
+    $('optHome').addEventListener('click', chooseHomeScreen);
+    sheetBack.hidden = false;
+  }
+
+  /* screen 2: Add to Home Screen as a separate app */
+  function chooseHomeScreen() {
+    if (!inTelegram && installPrompt) {          // Android Chrome, Edge, Samsung Internet: one-tap install
+      var ev = installPrompt; installPrompt = null;
+      closeSheet();
+      ev.prompt();
+      ev.userChoice.then(function (r) { if (r.outcome === 'accepted') homeBtn.hidden = true; }).catch(function () {});
+      return;
+    }
+    sheetTitle.textContent = 'Add to Home Screen';
+    var html, list = [{ label: 'Back', onClick: showChoices }];
+    var browser = ios ? 'Safari' : 'Chrome';
+
+    if (inTelegram || inAppBrowser) {
+      // a separate app can only be added from the phone's own browser
+      sheetLead.textContent = 'The separate app is added from ' + browser + ', not from inside ' + (inTelegram ? 'Telegram' : 'this app') + '.';
+      html = steps([
+        'Copy the address below.',
+        'Open <b>' + browser + '</b> and paste it.',
+        'Tap <b>Get app</b> there, then <b>Add to Home Screen</b>.'
+      ]) + '<span class="urlbox">' + SITE_URL + '</span>' +
+        '<div class="row"><button type="button" class="copy" id="copyBtn">Copy address</button></div>';
+      if (inTelegram) list.push({ label: 'Open in browser', primary: true, onClick: function () {
+        try { tg.openLink(SITE_URL); } catch (e) { location.href = SITE_URL; }
+      } });
+      else list.push({ label: 'Got it', primary: true, onClick: closeSheet });
+    } else if (ios) {
+      sheetLead.textContent = 'Apple doesn’t let websites do this by themselves, so it takes 3 taps:';
+      html = steps([
+        'Tap ' + ICON_SHARE + ' <b>Share</b> in Safari’s toolbar.',
+        'Scroll down and tap ' + ICON_ADD + ' <b>Add to Home Screen</b>.',
+        'Tap <b>Add</b>. The Books icon appears on your Home Screen.'
+      ]) + '<p class="note">Don’t see Share? Tap ' + ICON_DOTS_H + ' first; newer iPhones keep Share in that menu.</p>';
+      list.push({ label: 'Got it', primary: true, onClick: closeSheet });
+    } else {
+      sheetLead.textContent = 'Your browser needs 2 taps:';
+      html = steps([
+        'Tap ' + ICON_DOTS_V + ' the browser menu (top right).',
+        'Tap <b>Install app</b> or <b>Add to Home screen</b>, then <b>Install</b>.'
+      ]) + '<p class="note">If the menu has neither, open this page in Chrome.</p>';
+      list.push({ label: 'Got it', primary: true, onClick: closeSheet });
+    }
+    sheetBody.innerHTML = html;
+    buttons(list);
+    var copyBtn = $('copyBtn');
+    if (copyBtn) copyBtn.addEventListener('click', function () { copyAddress(copyBtn); });
+  }
+
+  // show the Get app button (not when already running as the installed app)
+  if (!standalone) {
     homeBtn.hidden = false;
-    homeBtn.addEventListener('click', function () {
-      if (installPrompt) {
-        installPrompt.prompt();
-        installPrompt.userChoice.then(function (r) { if (r.outcome === 'accepted') homeBtn.hidden = true; });
-        installPrompt = null;
-        return;
-      }
-      var ios = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-      installHelp.innerHTML = ios
-        ? 'In Safari, tap <b>Share</b> (the square with an arrow), then <b>Add to Home Screen</b>.<small>On iPhone this works only in Safari, not inside other apps.</small>'
-        : 'Open your browser menu <b>⋮</b>, then tap <b>Add to Home screen</b> or <b>Install app</b>.';
-      installHelp.hidden = !installHelp.hidden;
+    homeBtn.addEventListener('click', showChoices);
+  }
+  if (inTelegram && tgAtLeast('8.0') && tg.addToHomeScreen) {
+    try {
+      tg.checkHomeScreenStatus(function (status) { tgShortcut = (status !== 'added' && status !== 'unsupported'); });
+      tg.onEvent('homeScreenAdded', function () { tgShortcut = false; });
+    } catch (e) {}
+  }
+  window.addEventListener('appinstalled', function () { homeBtn.hidden = true; closeSheet(); });
+
+  // service worker: needed for the Android one-tap install (not used inside Telegram)
+  if (!inTelegram && 'serviceWorker' in navigator && location.protocol === 'https:') {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('sw.js').catch(function () {});
     });
   }
 
