@@ -4,7 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#0d0f14">
-<title>Book Reader</title>
+<title>Book Library</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Books">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
 /* Book Reader for Telegram Mini Apps.
@@ -72,6 +79,21 @@ body {
 .book .t { font-weight: 650; font-size: 14px; line-height: 1.3; overflow-wrap: anywhere; }
 .book .a { color: var(--muted); font-size: 12px; margin-top: -4px; }
 .empty { color: var(--muted); padding: 24px 0; }
+.lib-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.lib-head > div { min-width: 0; }
+#homeBtn {
+  flex: none; display: inline-flex; align-items: center; gap: 7px;
+  font: 600 13px system-ui, -apple-system, sans-serif; color: #fff;
+  background: var(--accent); border: 0; border-radius: 999px;
+  padding: 9px 13px; margin-top: 2px; cursor: pointer;
+}
+#homeBtn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+#installHelp {
+  margin: 0 0 18px; padding: 12px 14px; border-radius: 12px;
+  background: var(--card); border: 1px solid var(--line); font-size: 14px;
+}
+#installHelp b { color: var(--fg); }
+#installHelp small { display: block; margin-top: 6px; color: var(--muted); }
 
 /* ---------- reader ---------- */
 #reader { position: fixed; inset: 0; background: var(--ink); }
@@ -172,8 +194,17 @@ body.calm #rail { opacity: .35; }
 <body>
 
 <main id="library">
-  <h1 id="libTitle">Library</h1>
-  <p class="sub" id="libSub">Loading books…</p>
+  <div class="lib-head">
+    <div>
+      <h1 id="libTitle">Library</h1>
+      <p class="sub" id="libSub">Loading books…</p>
+    </div>
+    <button id="homeBtn" type="button" hidden>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+      Home Screen
+    </button>
+  </div>
+  <div id="installHelp" hidden></div>
   <div id="list"></div>
 </main>
 
@@ -620,6 +651,44 @@ body.calm #rail { opacity: .35; }
       updateWindow();
     }, 150);
   });
+
+  /* ======================= add to home screen ======================= */
+  var homeBtn = $('homeBtn'), installHelp = $('installHelp');
+  var standalone = false;
+  try {
+    standalone = window.matchMedia('(display-mode: fullscreen)').matches ||
+                 window.matchMedia('(display-mode: standalone)').matches ||
+                 window.navigator.standalone === true;
+  } catch (e) {}
+  var installPrompt = null;
+  window.addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); installPrompt = e; });
+
+  if (inTelegram && tgAtLeast('8.0') && tg.addToHomeScreen) {
+    // inside Telegram: a home-screen icon that opens this Mini App
+    try {
+      tg.checkHomeScreenStatus(function (status) {
+        if (status !== 'added' && status !== 'unsupported') homeBtn.hidden = false;
+      });
+      tg.onEvent('homeScreenAdded', function () { homeBtn.hidden = true; });
+    } catch (e) {}
+    homeBtn.addEventListener('click', function () { try { tg.addToHomeScreen(); } catch (e) {} });
+  } else if (!inTelegram && !standalone) {
+    // in a phone browser: install the site as its own app
+    homeBtn.hidden = false;
+    homeBtn.addEventListener('click', function () {
+      if (installPrompt) {
+        installPrompt.prompt();
+        installPrompt.userChoice.then(function (r) { if (r.outcome === 'accepted') homeBtn.hidden = true; });
+        installPrompt = null;
+        return;
+      }
+      var ios = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+      installHelp.innerHTML = ios
+        ? 'In Safari, tap <b>Share</b> (the square with an arrow), then <b>Add to Home Screen</b>.<small>On iPhone this works only in Safari, not inside other apps.</small>'
+        : 'Open your browser menu <b>⋮</b>, then tap <b>Add to Home screen</b> or <b>Install app</b>.';
+      installHelp.hidden = !installHelp.hidden;
+    });
+  }
 
   /* ======================= start ======================= */
   // Which book? Telegram link: t.me/YourBot/read?startapp=<id>   Browser test: index.html?book=<id>
