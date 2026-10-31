@@ -1,0 +1,570 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0d0f14">
+<title>Book Reader</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+/* Book Reader for Telegram Mini Apps.
+   Library list -> full-screen reader, one PDF page per swipe, double-tap zoom, portrait only. */
+:root {
+  --ink: #0d0f14;
+  --card: #171b24;
+  --line: rgba(255,255,255,.10);
+  --glass: rgba(22,26,34,.78);
+  --fg: #eef1f6;
+  --muted: #98a1b0;
+  --accent: #5b8cff;
+  --top: env(safe-area-inset-top, 0px);      /* replaced from Telegram safe areas in script */
+  --bottom: env(safe-area-inset-bottom, 0px);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; overflow: hidden; }
+body {
+  background: var(--ink); color: var(--fg);
+  font: 15px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans Armenian", sans-serif;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none; user-select: none;
+  -webkit-text-size-adjust: 100%;
+}
+[hidden] { display: none !important; }
+
+/* ---------- library ---------- */
+#library {
+  position: fixed; inset: 0; overflow-y: auto;
+  padding: calc(var(--top) + 20px) max(16px, env(safe-area-inset-right, 0px)) calc(var(--bottom) + 24px) max(16px, env(safe-area-inset-left, 0px));
+  -webkit-overflow-scrolling: touch;
+}
+#library h1 { margin: 0 0 4px; font-size: 26px; letter-spacing: -.01em; }
+#library .sub { margin: 0 0 18px; color: var(--muted); font-size: 14px; }
+#list { display: grid; gap: 10px; }
+.book {
+  display: grid; grid-template-columns: 44px 1fr auto; align-items: center; gap: 14px;
+  width: 100%; text-align: left; color: inherit; font: inherit;
+  background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+  padding: 12px 14px; cursor: pointer;
+}
+.book:active { transform: scale(.985); }
+.book:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.spine {
+  width: 44px; height: 58px; border-radius: 4px 7px 7px 4px;
+  display: grid; place-items: center; font-weight: 700; font-size: 18px; color: #fff;
+  box-shadow: inset 4px 0 0 rgba(0,0,0,.18);
+}
+.book .t { font-weight: 650; min-width: 0; overflow-wrap: anywhere; }
+.book .a { color: var(--muted); font-size: 13px; margin-top: 2px; }
+.book .go { color: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.empty { color: var(--muted); padding: 24px 0; }
+
+/* ---------- reader ---------- */
+#reader { position: fixed; inset: 0; background: var(--ink); }
+#feed {
+  position: absolute; inset: 0;
+  overflow-y: scroll; overflow-x: hidden;
+  scroll-snap-type: y mandatory;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+  touch-action: pan-y;
+}
+#feed::-webkit-scrollbar { display: none; }
+.slide {
+  height: 100%;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  display: grid; place-items: center;
+  padding: var(--top) env(safe-area-inset-right, 0px) var(--bottom) env(safe-area-inset-left, 0px);
+}
+.page { position: relative; background: #fff; overflow: hidden; }
+.page canvas { display: block; width: 100%; height: 100%; }
+.page .ph { position: absolute; inset: 0; display: grid; place-items: center; color: #8a909c; font-size: 13px; background: #f2f3f6; }
+
+#bar {
+  position: absolute; inset: 0 0 auto; z-index: 5;
+  display: flex; align-items: center; gap: 10px;
+  padding: calc(var(--top) + 8px) max(14px, env(safe-area-inset-right, 0px)) 18px max(14px, env(safe-area-inset-left, 0px));
+  background: linear-gradient(rgba(13,15,20,.92) 45%, transparent);
+  transition: opacity .25s ease, transform .25s ease;
+}
+#bar .name { flex: 1; min-width: 0; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pill {
+  font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums;
+  padding: 6px 11px; border-radius: 999px; background: var(--glass); border: 1px solid var(--line);
+}
+.pill b { color: var(--fg); }
+#backBtn {
+  display: grid; place-items: center; width: 36px; height: 36px; border-radius: 999px;
+  color: var(--fg); background: var(--glass); border: 1px solid var(--line); cursor: pointer;
+}
+body.calm #bar { opacity: 0; transform: translateY(-100%); pointer-events: none; }
+
+#rail {
+  position: absolute; z-index: 4; width: 3px; border-radius: 3px; background: var(--line);
+  right: calc(env(safe-area-inset-right, 0px) + 4px);
+  top: calc(var(--top) + 12px); bottom: calc(var(--bottom) + 12px);
+  pointer-events: none; transition: opacity .25s ease;
+}
+#railFill { position: absolute; left: 0; right: 0; top: 0; border-radius: 3px; background: var(--accent); transition: top .25s ease, height .25s ease; }
+body.calm #rail { opacity: .35; }
+
+#hint {
+  position: absolute; z-index: 4; left: 50%; transform: translateX(-50%);
+  bottom: calc(var(--bottom) + 32px);
+  font-size: 13px; padding: 9px 14px; border-radius: 999px; white-space: nowrap;
+  background: var(--glass); border: 1px solid var(--line); pointer-events: none;
+  transition: opacity .4s ease;
+}
+#hint.gone { opacity: 0; }
+
+#loading {
+  position: absolute; inset: 0; z-index: 3; display: grid; place-items: center;
+  color: var(--muted); font-size: 14px; pointer-events: none;
+}
+.bar-track { width: 160px; height: 3px; margin-top: 10px; border-radius: 3px; background: var(--line); overflow: hidden; }
+.bar-fill { height: 100%; width: 0; background: var(--accent); transition: width .2s ease; }
+
+/* ---------- zoom ---------- */
+#zoom {
+  position: fixed; inset: 0; z-index: 8; background: #10131a;
+  overflow: auto; overscroll-behavior: contain; touch-action: pan-x pan-y;
+  opacity: 0; pointer-events: none; transition: opacity .18s ease;
+  scrollbar-width: none;
+}
+#zoom::-webkit-scrollbar { display: none; }
+#zoom.on { opacity: 1; pointer-events: auto; }
+#zoomInner canvas { display: block; background: #fff; }
+#zoomTag {
+  position: fixed; z-index: 9; left: 50%; transform: translateX(-50%);
+  bottom: calc(var(--bottom) + 20px);
+  font-size: 12px; padding: 7px 12px; border-radius: 999px; white-space: nowrap;
+  background: var(--glass); border: 1px solid var(--line); pointer-events: none;
+}
+
+/* ---------- portrait only ---------- */
+#rotate { position: fixed; inset: 0; z-index: 30; display: none; place-items: center; text-align: center; background: var(--ink); padding: 24px; }
+#rotate p { margin: 12px 0 4px; font-size: 16px; font-weight: 700; }
+#rotate small { color: var(--muted); }
+@media (orientation: landscape) and (max-height: 540px) { #rotate { display: grid; } }
+
+#toast {
+  position: fixed; z-index: 40; left: 16px; right: 16px; top: calc(var(--top) + 60px);
+  background: #3a1820; color: #ffd7de; border: 1px solid #6b2a37; border-radius: 12px; padding: 12px 14px; font-size: 14px;
+}
+@media (prefers-reduced-motion: reduce) { #bar, #rail, #railFill, #hint, #zoom { transition: none; } }
+</style>
+</head>
+<body>
+
+<main id="library">
+  <h1 id="libTitle">Library</h1>
+  <p class="sub" id="libSub">Loading books…</p>
+  <div id="list"></div>
+</main>
+
+<section id="reader" hidden>
+  <div id="feed" aria-label="Book pages"></div>
+  <header id="bar">
+    <button id="backBtn" type="button" aria-label="Back to library" hidden>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <div class="name" id="bookName"></div>
+    <div class="pill"><b id="cur">1</b> / <span id="tot">–</span></div>
+  </header>
+  <div id="rail"><div id="railFill"></div></div>
+  <div id="hint">Swipe up · tap for menu · double-tap to zoom</div>
+  <div id="loading"><div>
+    <div id="loadText">Opening book…</div>
+    <div class="bar-track"><div class="bar-fill" id="loadFill"></div></div>
+  </div></div>
+</section>
+
+<div id="zoom"><div id="zoomInner"></div></div>
+<div id="zoomTag" hidden>Drag to move · double-tap to zoom out</div>
+
+<div id="rotate"><div>
+  <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></svg>
+  <p>Turn your phone upright</p>
+  <small>Books open in portrait mode only.</small>
+</div></div>
+
+<div id="toast" hidden></div>
+
+<script src="lib/pdf.min.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  /* ======================= settings ======================= */
+  var LIBRARY_TITLE = 'Library';          // heading on the book list
+  var ZOOM = 2.5;                          // double-tap zoom factor
+  var MAX_PIXELS = 12e6;                   // canvas size limit for phones
+  var COLORS = ['#2E5BFF', '#E0457B', '#13A88A', '#F2A20C', '#7B4DE0', '#0EA5C6', '#D9534F'];
+
+  /* ======================= Telegram ======================= */
+  var tg = window.Telegram && window.Telegram.WebApp;
+  var inTelegram = !!(tg && tg.initData);
+  function tgAtLeast(v) { try { return !!(tg && tg.isVersionAtLeast && tg.isVersionAtLeast(v)); } catch (e) { return false; } }
+
+  function applyInsets() {
+    var root = document.documentElement.style;
+    if (inTelegram && tgAtLeast('8.0')) {
+      var s = tg.safeAreaInset || {}, c = tg.contentSafeAreaInset || {};
+      root.setProperty('--top', ((s.top || 0) + (c.top || 0)) + 'px');
+      root.setProperty('--bottom', ((s.bottom || 0) + (c.bottom || 0)) + 'px');
+    }
+  }
+
+  if (tg) {
+    try { tg.ready(); } catch (e) {}
+    if (inTelegram) {
+      try { tg.expand(); } catch (e) {}
+      try { if (tgAtLeast('6.1')) { tg.setHeaderColor('#0d0f14'); tg.setBackgroundColor('#0d0f14'); } } catch (e) {}
+      try { if (tgAtLeast('7.10')) tg.setBottomBarColor('#0d0f14'); } catch (e) {}
+      try { if (tgAtLeast('7.7')) tg.disableVerticalSwipes(); } catch (e) {}   // swipes turn pages instead of closing the app
+      try { if (tgAtLeast('8.0')) { tg.requestFullscreen(); tg.lockOrientation(); } } catch (e) {}
+      try {
+        tg.onEvent('safeAreaChanged', applyInsets);
+        tg.onEvent('contentSafeAreaChanged', applyInsets);
+        tg.onEvent('fullscreenChanged', applyInsets);
+      } catch (e) {}
+      applyInsets();
+    }
+  }
+
+  /* last page per book: Telegram cloud storage, else this device */
+  function savePage(id, page) {
+    var key = 'page_' + id;
+    try { if (inTelegram && tgAtLeast('6.9')) { tg.CloudStorage.setItem(key, String(page)); return; } } catch (e) {}
+    try { localStorage.setItem(key, String(page)); } catch (e) {}
+  }
+  function loadPage(id) {
+    var key = 'page_' + id;
+    return new Promise(function (resolve) {
+      try {
+        if (inTelegram && tgAtLeast('6.9')) {
+          tg.CloudStorage.getItem(key, function (err, v) { resolve(parseInt(v, 10) || 1); });
+          setTimeout(function () { resolve(1); }, 1500);
+          return;
+        }
+      } catch (e) {}
+      try { resolve(parseInt(localStorage.getItem(key), 10) || 1); } catch (e) { resolve(1); }
+    });
+  }
+
+  /* ======================= elements ======================= */
+  function $(id) { return document.getElementById(id); }
+  var library = $('library'), list = $('list'), libSub = $('libSub');
+  var reader = $('reader'), feed = $('feed'), bookName = $('bookName');
+  var curEl = $('cur'), totEl = $('tot'), railFill = $('railFill'), hint = $('hint');
+  var loading = $('loading'), loadText = $('loadText'), loadFill = $('loadFill');
+  var zoom = $('zoom'), zoomInner = $('zoomInner'), zoomTag = $('zoomTag');
+  var backBtn = $('backBtn'), toast = $('toast');
+  $('libTitle').textContent = LIBRARY_TITLE;
+
+  var toastTimer = 0;
+  function showToast(msg) {
+    toast.textContent = msg; toast.hidden = false;
+    clearTimeout(toastTimer); toastTimer = setTimeout(function () { toast.hidden = true; }, 6000);
+  }
+
+  var lib = window.pdfjsLib;
+  if (!lib) { libSub.textContent = 'The PDF engine is missing. Check that the lib folder was uploaded.'; return; }
+  lib.GlobalWorkerOptions.workerSrc = 'lib/pdf.worker.min.js';
+  var dpr = function () { return Math.min(window.devicePixelRatio || 1, 3); };
+
+  /* ======================= library ======================= */
+  var books = [];
+  function fetchBooks() {
+    return fetch('books.json?t=' + Date.now(), { cache: 'no-store' })
+      .then(function (r) { if (!r.ok) throw new Error('status ' + r.status); return r.json(); })
+      .then(function (j) { books = (j && j.books) || []; return books; });
+  }
+
+  function renderLibrary() {
+    list.innerHTML = '';
+    libSub.textContent = books.length === 1 ? '1 book' : books.length + ' books';
+    if (!books.length) { list.innerHTML = '<div class="empty">No books yet.</div>'; return; }
+    books.forEach(function (b, i) {
+      var btn = document.createElement('button');
+      btn.type = 'button'; btn.className = 'book';
+      var spine = document.createElement('div');
+      spine.className = 'spine';
+      spine.style.background = COLORS[i % COLORS.length];
+      spine.textContent = (b.title || '?').trim().charAt(0).toUpperCase();
+      var text = document.createElement('div');
+      text.style.minWidth = '0';
+      var t = document.createElement('div'); t.className = 't'; t.textContent = b.title || b.id;
+      text.appendChild(t);
+      if (b.author) { var a = document.createElement('div'); a.className = 'a'; a.textContent = b.author; text.appendChild(a); }
+      var go = document.createElement('div'); go.className = 'go'; go.textContent = 'Read';
+      btn.appendChild(spine); btn.appendChild(text); btn.appendChild(go);
+      btn.addEventListener('click', function () { openBook(b, true); });
+      list.appendChild(btn);
+    });
+  }
+
+  /* ======================= reader state ======================= */
+  var doc = null, sizes = [], slides = [], current = 0, zoomed = false, token = 0, book = null, cameFromLibrary = false;
+
+  function fitBox(i) {
+    var s = slides[i].el, cs = getComputedStyle(s);
+    var aw = s.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+    var ah = s.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
+    var k = Math.min(aw / sizes[i].w, ah / sizes[i].h);
+    return { w: Math.floor(sizes[i].w * k), h: Math.floor(sizes[i].h * k), k: k };
+  }
+  function layout(i) {
+    var b = fitBox(i);
+    slides[i].page.style.width = b.w + 'px';
+    slides[i].page.style.height = b.h + 'px';
+    return b;
+  }
+
+  function render(i) {
+    var sl = slides[i];
+    if (!sl || sl.rendered || sl.busy) return;
+    sl.busy = true;
+    var my = token;
+    doc.getPage(i + 1).then(function (page) {
+      if (my !== token) return;
+      var b = layout(i);
+      var v1 = page.getViewport({ scale: 1 });
+      var scale = b.k * dpr();
+      if (v1.width * v1.height * scale * scale > MAX_PIXELS) scale = Math.sqrt(MAX_PIXELS / (v1.width * v1.height));
+      var vp = page.getViewport({ scale: scale });
+      var c = document.createElement('canvas');
+      c.width = Math.floor(vp.width); c.height = Math.floor(vp.height);
+      return page.render({ canvasContext: c.getContext('2d'), viewport: vp }).promise.then(function () {
+        if (my !== token) return;
+        var old = sl.page.querySelector('canvas'); if (old) old.remove();
+        sl.page.appendChild(c); sl.ph.hidden = true; sl.rendered = true;
+      });
+    }).catch(function () { sl.ph.textContent = 'Could not draw this page'; })
+      .then(function () { sl.busy = false; });
+  }
+  function release(i) {
+    var sl = slides[i];
+    if (!sl || !sl.rendered) return;
+    var c = sl.page.querySelector('canvas');
+    if (c) { c.width = 0; c.height = 0; c.remove(); }
+    sl.ph.hidden = false; sl.rendered = false;
+  }
+  function updateWindow() {
+    for (var i = 0; i < slides.length; i++) { if (Math.abs(i - current) <= 2) render(i); else release(i); }
+  }
+  function updateCounter() {
+    curEl.textContent = current + 1;
+    var n = slides.length || 1;
+    railFill.style.height = (100 / n) + '%';
+    railFill.style.top = (100 * current / n) + '%';
+  }
+
+  /* ======================= open / close a book ======================= */
+  function openBook(b, fromLibrary) {
+    var my = ++token;
+    book = b; cameFromLibrary = !!fromLibrary;
+    closeZoom();
+    library.hidden = true; reader.hidden = false;
+    bookName.textContent = b.title || b.id;
+    backBtn.hidden = inTelegram;   // inside Telegram the native Back button is used
+    feed.innerHTML = ''; slides = []; sizes = []; totEl.textContent = '–'; curEl.textContent = '1';
+    loading.hidden = false; loadText.textContent = 'Opening book…'; loadFill.style.width = '0';
+    hint.classList.remove('gone');
+    showControls();
+    if (inTelegram) { try { tg.BackButton.show(); } catch (e) {} }
+
+    var task = lib.getDocument({ url: b.file });
+    task.onProgress = function (p) {
+      if (p.total) loadFill.style.width = Math.min(100, Math.round(p.loaded / p.total * 100)) + '%';
+    };
+    Promise.all([task.promise, loadPage(b.id)]).then(function (res) {
+      if (my !== token) { res[0].destroy(); return; }
+      if (doc) doc.destroy();
+      doc = res[0];
+      var startPage = Math.min(Math.max(1, res[1]), doc.numPages);
+      var jobs = [];
+      for (var p = 1; p <= doc.numPages; p++) jobs.push(doc.getPage(p).then(function (pg) {
+        var v = pg.getViewport({ scale: 1 }); return { w: v.width, h: v.height };
+      }));
+      return Promise.all(jobs).then(function (sz) {
+        if (my !== token) return;
+        sizes = sz;
+        var frag = document.createDocumentFragment();
+        sizes.forEach(function (_, i) {
+          var el = document.createElement('div'); el.className = 'slide';
+          var page = document.createElement('div'); page.className = 'page';
+          var ph = document.createElement('div'); ph.className = 'ph'; ph.textContent = 'Page ' + (i + 1);
+          page.appendChild(ph); el.appendChild(page); frag.appendChild(el);
+          slides.push({ el: el, page: page, ph: ph, rendered: false, busy: false });
+        });
+        feed.appendChild(frag);
+        slides.forEach(function (_, i) { layout(i); });
+        totEl.textContent = doc.numPages;
+        current = startPage - 1;
+        feed.scrollTop = current * feed.clientHeight;
+        if (current > 0) hint.classList.add('gone');
+        updateCounter(); updateWindow();
+        loading.hidden = true;
+      });
+    }).catch(function (e) {
+      if (my !== token) return;
+      loading.hidden = true;
+      showToast('This book could not be opened. Check that the file "' + b.file + '" exists on the site and is a PDF without a password.');
+    });
+  }
+
+  function closeBook() {
+    token++;
+    closeZoom();
+    if (doc) { doc.destroy(); doc = null; }
+    feed.innerHTML = ''; slides = [];
+    reader.hidden = true; library.hidden = false;
+    document.body.classList.remove('calm');
+    if (inTelegram) { try { tg.BackButton.hide(); } catch (e) {} }
+    if (!books.length) fetchBooks().then(renderLibrary).catch(function () {});
+  }
+  backBtn.addEventListener('click', closeBook);
+  if (inTelegram) { try { tg.BackButton.onClick(function () { if (zoomed) closeZoom(); else closeBook(); }); } catch (e) {} }
+
+  /* ======================= scrolling ======================= */
+  var raf = 0, saveTimer = 0;
+  feed.addEventListener('scroll', function () {
+    cancelAnimationFrame(raf);
+    raf = requestAnimationFrame(function () {
+      var i = Math.round(feed.scrollTop / feed.clientHeight);
+      if (i !== current && i >= 0 && i < slides.length) {
+        current = i; updateCounter(); updateWindow();
+        if (i > 0) { hint.classList.add('gone'); hideControls(); }
+        clearTimeout(saveTimer);
+        saveTimer = setTimeout(function () { if (book) savePage(book.id, current + 1); }, 600);
+      }
+    });
+  }, { passive: true });
+
+  /* ======================= taps ======================= */
+  var lastTouch = 0;
+  function bindTaps(el, onDouble, onSingle) {
+    var down = null, last = null, timer = 0;
+    function start(x, y) { down = { x: x, y: y, t: Date.now() }; }
+    function end(x, y) {
+      if (!down) return false;
+      var moved = Math.hypot(x - down.x, y - down.y) > 12, long = Date.now() - down.t > 350;
+      down = null;
+      if (moved || long) { last = null; return false; }
+      var now = Date.now();
+      if (last && now - last.t < 320 && Math.hypot(x - last.x, y - last.y) < 40) {
+        clearTimeout(timer); last = null; onDouble(x, y); return true;
+      }
+      last = { x: x, y: y, t: now };
+      clearTimeout(timer);
+      if (onSingle) timer = setTimeout(function () { last = null; onSingle(); }, 320);
+      return false;
+    }
+    el.addEventListener('touchstart', function (e) {
+      lastTouch = Date.now();
+      if (e.touches.length === 1) start(e.touches[0].clientX, e.touches[0].clientY); else down = null;
+    }, { passive: true });
+    el.addEventListener('touchend', function (e) {
+      lastTouch = Date.now();
+      var t = e.changedTouches[0];
+      if (end(t.clientX, t.clientY)) e.preventDefault();
+    }, { passive: false });
+    el.addEventListener('mousedown', function (e) { if (Date.now() - lastTouch > 800) start(e.clientX, e.clientY); });
+    el.addEventListener('mouseup', function (e) { if (Date.now() - lastTouch > 800) end(e.clientX, e.clientY); });
+  }
+
+  var calmTimer = 0;
+  function showControls() {
+    document.body.classList.remove('calm');
+    clearTimeout(calmTimer); calmTimer = setTimeout(hideControls, 3500);
+  }
+  function hideControls() { clearTimeout(calmTimer); document.body.classList.add('calm'); }
+  function toggleControls() { if (document.body.classList.contains('calm')) showControls(); else hideControls(); }
+
+  /* ======================= zoom ======================= */
+  function openZoom(x, y) {
+    var sl = slides[current];
+    if (!sl || zoomed || !doc) return;
+    var r = sl.page.getBoundingClientRect();
+    var fx = Math.min(1, Math.max(0, (x - r.left) / r.width));
+    var fy = Math.min(1, Math.max(0, (y - r.top) / r.height));
+    zoomed = true;
+    var my = token;
+    doc.getPage(current + 1).then(function (page) {
+      if (my !== token || !zoomed) return;
+      var b = fitBox(current), cssScale = b.k * ZOOM;
+      var v1 = page.getViewport({ scale: 1 });
+      var px = cssScale * dpr();
+      if (v1.width * v1.height * px * px > MAX_PIXELS) px = Math.sqrt(MAX_PIXELS / (v1.width * v1.height));
+      var cssW = Math.round(v1.width * cssScale), cssH = Math.round(v1.height * cssScale);
+      var vp = page.getViewport({ scale: px });
+      var c = document.createElement('canvas');
+      c.width = Math.floor(vp.width); c.height = Math.floor(vp.height);
+      c.style.width = cssW + 'px'; c.style.height = cssH + 'px';
+      var small = sl.page.querySelector('canvas');
+      if (small) c.getContext('2d').drawImage(small, 0, 0, c.width, c.height);
+      zoomInner.innerHTML = ''; zoomInner.appendChild(c);
+      var vw = zoom.clientWidth, vh = zoom.clientHeight;
+      zoomInner.style.padding = Math.max(0, (vh - cssH) / 2) + 'px ' + Math.max(0, (vw - cssW) / 2) + 'px';
+      zoom.classList.add('on'); zoomTag.hidden = false;
+      zoom.scrollLeft = fx * cssW - vw / 2;
+      zoom.scrollTop = fy * cssH - vh / 2;
+      page.render({ canvasContext: c.getContext('2d'), viewport: vp }).promise.catch(function () {});
+    });
+  }
+  function closeZoom() {
+    if (!zoomed) return;
+    zoomed = false;
+    zoom.classList.remove('on'); zoomTag.hidden = true;
+    setTimeout(function () {
+      if (zoomed) return;
+      var c = zoomInner.querySelector('canvas'); if (c) { c.width = 0; c.height = 0; }
+      zoomInner.innerHTML = '';
+    }, 200);
+  }
+  bindTaps(feed, openZoom, toggleControls);
+  bindTaps(zoom, function () { closeZoom(); });
+
+  document.addEventListener('keydown', function (e) {
+    if (reader.hidden) return;
+    if (e.key === 'Escape') { if (zoomed) closeZoom(); else closeBook(); }
+    if (zoomed) return;
+    var go = function (d) { var t = slides[current + d]; if (t) t.el.scrollIntoView({ behavior: 'smooth' }); };
+    if (e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); go(1); }
+    if (e.key === 'ArrowUp' || e.key === 'PageUp') { e.preventDefault(); go(-1); }
+  });
+
+  var rt = 0;
+  window.addEventListener('resize', function () {
+    clearTimeout(rt);
+    rt = setTimeout(function () {
+      if (!doc || reader.hidden) return;
+      closeZoom();
+      slides.forEach(function (_, i) { release(i); layout(i); });
+      feed.scrollTop = current * feed.clientHeight;
+      updateWindow();
+    }, 150);
+  });
+
+  /* ======================= start ======================= */
+  // Which book? Telegram link: t.me/YourBot/read?startapp=<id>   Browser test: index.html?book=<id>
+  var wanted = '';
+  try { wanted = (tg && tg.initDataUnsafe && tg.initDataUnsafe.start_param) || ''; } catch (e) {}
+  if (!wanted) { try { wanted = new URLSearchParams(location.search).get('book') || new URLSearchParams(location.search).get('tgWebAppStartParam') || ''; } catch (e) {} }
+
+  fetchBooks().then(function () {
+    renderLibrary();
+    if (wanted) {
+      var b = books.filter(function (x) { return x.id === wanted; })[0];
+      if (b) openBook(b, false);
+      else showToast('The book "' + wanted + '" is not in books.json. Showing the library instead.');
+    }
+  }).catch(function () {
+    libSub.textContent = 'Could not load books.json. Check that the file is uploaded and has no typing mistakes (commas, quotes).';
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+{
+  "books": [
+    {
+      "id": "sample",
+      "title": "Sample book",
+      "author": "Book Reader",
+      "file": "books/sample.pdf"
+    }
+  ]
+}
