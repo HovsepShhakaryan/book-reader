@@ -81,6 +81,31 @@ body {
 .empty { color: var(--muted); padding: 24px 0; }
 .lib-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
 .lib-head h1 { min-width: 0; }
+.search {
+  position: relative; display: flex; align-items: center; margin: 0 0 14px;
+  background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+}
+.search:focus-within { border-color: var(--accent); }
+.search .mag { position: absolute; left: 12px; color: var(--muted); pointer-events: none; }
+#search {
+  flex: 1; min-width: 0; height: 44px; padding: 0 40px 0 40px;
+  font: 16px system-ui, -apple-system, "Noto Sans Armenian", sans-serif;   /* 16px stops iPhone zooming in */
+  color: var(--fg); background: transparent; border: 0; outline: none;
+  -webkit-appearance: none; appearance: none;
+  -webkit-user-select: text; user-select: text;
+}
+#search::placeholder { color: var(--muted); }
+#search::-webkit-search-cancel-button { display: none; }
+#searchClear {
+  position: absolute; right: 6px; width: 32px; height: 32px; display: grid; place-items: center;
+  border: 0; border-radius: 8px; background: transparent; color: var(--muted); cursor: pointer;
+}
+#more { display: flex; justify-content: center; gap: 6px; padding: 24px 0 8px; }
+#more .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); opacity: .5; animation: blink 1s infinite ease-in-out; }
+#more .dot:nth-child(2) { animation-delay: .15s; }
+#more .dot:nth-child(3) { animation-delay: .3s; }
+@keyframes blink { 50% { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { #more .dot { animation: none; } }
 .lib-tools { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 0 18px; }
 #library .lib-tools .sub { margin: 0; }
 .view-toggle { display: flex; padding: 3px; gap: 2px; border-radius: 10px; background: var(--card); border: 1px solid var(--line); }
@@ -265,6 +290,13 @@ body.calm #rail { opacity: .35; }
       Get app
     </button>
   </div>
+  <div class="search">
+    <svg class="mag" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+    <input id="search" type="search" placeholder="Search books" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="search" aria-label="Search books">
+    <button type="button" id="searchClear" aria-label="Clear search" hidden>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+  </div>
   <div class="lib-tools">
     <p class="sub" id="libSub">Loading books…</p>
     <div class="view-toggle" role="group" aria-label="Library view">
@@ -277,6 +309,10 @@ body.calm #rail { opacity: .35; }
     </div>
   </div>
   <div id="list"></div>
+  <div class="empty" id="noMatch" hidden></div>
+  <div id="more" hidden>
+    <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+  </div>
 </main>
 
 <section id="reader" hidden>
@@ -326,6 +362,7 @@ body.calm #rail { opacity: .35; }
   /* ======================= settings ======================= */
   var LIBRARY_TITLE = 'Library';          // heading on the book list
   var TELEGRAM_LINK = 'https://t.me/SwipeBooks_bot/read';   // your bot's Mini App link
+  var PER_PAGE = 30;                       // books added each time you scroll to the bottom
   var ZOOM = 2.5;                          // double-tap zoom factor
   var MAX_PIXELS = 12e6;                   // canvas size limit for phones
   var COLORS = ['#2E5BFF', '#E0457B', '#13A88A', '#F2A20C', '#7B4DE0', '#0EA5C6', '#D9534F'];
@@ -465,6 +502,7 @@ body.calm #rail { opacity: .35; }
     if (!books.length) { list.innerHTML = '<div class="empty">No books yet.</div>'; return; }
     books.forEach(function (b, i) {
       var btn = document.createElement('button');
+      btn._book = b;
       btn.type = 'button'; btn.className = 'book';
       btn.setAttribute('aria-label', b.title || b.id);
       var cover = document.createElement('div');
@@ -479,6 +517,7 @@ body.calm #rail { opacity: .35; }
       btn.appendChild(cover); btn.appendChild(t);
       if (b.author) { var a = document.createElement('div'); a.className = 'a'; a.textContent = b.author; btn.appendChild(a); }
       btn.addEventListener('click', function () { openBook(b, true); });
+      btn._text = norm((b.title || '') + ' ' + (b.author || '') + ' ' + b.id);
       list.appendChild(btn);
 
       // cover image: custom "cover" from books.json, else cached first page, else render it
@@ -489,7 +528,57 @@ body.calm #rail { opacity: .35; }
       else if (coverObserver) coverObserver.observe(cover);
       else queueThumb(b, img);
     });
+    applySearch();
   }
+
+  /* search: matches title, author and id; every word must match, in any order */
+  var searchInput = $('search'), searchClear = $('searchClear'), noMatch = $('noMatch');
+  function norm(t) {
+    t = String(t || '').toLowerCase();
+    try { t = t.normalize('NFD').replace(/[\u0300-\u036f]/g, ''); } catch (e) {}
+    return t.replace(/[_\-.,:;·]+/g, ' ');
+  }
+  var shownCount = PER_PAGE;
+  var more = $('more'), moreLeft = false;
+  function applySearch() {
+    var words = norm(searchInput.value).split(/\s+/).filter(Boolean);
+    var items = list.querySelectorAll('.book'), matches = 0;
+    for (var i = 0; i < items.length; i++) {
+      var hit = words.every(function (w) { return items[i]._text.indexOf(w) !== -1; });
+      if (hit) matches++;
+      items[i].hidden = !hit || matches > shownCount;   // only the first `shownCount` matches are shown
+    }
+    moreLeft = matches > shownCount;
+    more.hidden = !moreLeft;
+
+    searchClear.hidden = !searchInput.value;
+    if (!books.length) return;
+    if (words.length) {
+      libSub.textContent = matches + ' of ' + books.length + (books.length === 1 ? ' book' : ' books');
+      noMatch.hidden = matches > 0;
+      noMatch.textContent = 'No books match “' + searchInput.value.trim() + '”.';
+    } else {
+      libSub.textContent = books.length === 1 ? '1 book' : books.length + ' books';
+      noMatch.hidden = true;
+    }
+    if (moreLeft) setTimeout(checkMore, 50);   // screen not full yet? add more right away
+  }
+  // when the bottom of the list comes into view, add the next 30 books
+  function loadMore() {
+    if (!moreLeft || library.hidden) return;
+    shownCount += PER_PAGE;
+    applySearch();
+  }
+  function checkMore() {
+    if (!moreLeft || library.hidden) return;
+    var r = more.getBoundingClientRect();
+    if (r.top < window.innerHeight + 400) loadMore();
+  }
+  library.addEventListener('scroll', checkMore, { passive: true });
+  window.addEventListener('resize', checkMore);
+  searchInput.addEventListener('input', function () { shownCount = PER_PAGE; library.scrollTop = 0; applySearch(); });
+  searchInput.addEventListener('keydown', function (e) { if (e.key === 'Enter') searchInput.blur(); });
+  searchClear.addEventListener('click', function () { searchInput.value = ''; shownCount = PER_PAGE; applySearch(); searchInput.focus(); });
 
   /* grid / list switch, remembered on this device */
   var viewGrid = $('viewGrid'), viewList = $('viewList');
