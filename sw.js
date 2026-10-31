@@ -1,4 +1,4 @@
-// Service worker for Book Library.
+// Service worker for Swipe Book.
 // It lets Android browsers offer the one-tap "Install app" prompt.
 // Nothing is cached, so new books and updates always show right away.
 
@@ -7,7 +7,7 @@ self.addEventListener('activate', function (e) { e.waitUntil(self.clients.claim(
 
 var OFFLINE_PAGE =
   '<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' +
-  '<title>Book Library</title>' +
+  '<title>Swipe Book</title>' +
   '<body style="margin:0;height:100vh;display:grid;place-items:center;background:#0d0f14;color:#eef1f6;' +
   'font:16px system-ui,-apple-system,sans-serif;text-align:center;padding:24px;box-sizing:border-box">' +
   '<div><p style="font-weight:700;font-size:18px;margin:0 0 6px">No internet connection</p>' +

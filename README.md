@@ -1,4 +1,4 @@
-# Book Reader
+# Swipe Book
 
 A PDF book reader for a Telegram Mini App. One page per screen, swipe up and down, double-tap to zoom.
 

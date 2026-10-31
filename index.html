@@ -4,17 +4,18 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#0d0f14">
-<title>Book Library</title>
+<title>Swipe Book</title>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Books">
+<meta name="apple-mobile-web-app-title" content="Swipe Book">
+<meta name="application-name" content="Swipe Book">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
-/* Book Reader for Telegram Mini Apps.
+/* Swipe Book: a PDF book reader for Telegram Mini Apps and the Home Screen.
    Library list -> full-screen reader, one PDF page per swipe, double-tap zoom, portrait only. */
 :root {
   --ink: #0d0f14;
@@ -289,7 +290,7 @@ body.calm #rail { opacity: .35; }
 
 <main id="library">
   <div class="lib-head">
-    <h1 id="libTitle">Library</h1>
+    <h1 id="libTitle">Swipe Book</h1>
     <button id="homeBtn" type="button" hidden>
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
       Get app
@@ -350,7 +351,7 @@ body.calm #rail { opacity: .35; }
 
 <div id="sheetBack" hidden>
   <div id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
-    <h2 id="sheetTitle">Add Books to your Home Screen</h2>
+    <h2 id="sheetTitle">Add Swipe Book to your Home Screen</h2>
     <p class="lead" id="sheetLead">It opens full screen, like a normal app.</p>
     <div id="sheetBody"></div>
     <div class="row" id="sheetRow">
@@ -365,7 +366,7 @@ body.calm #rail { opacity: .35; }
   'use strict';
 
   /* ======================= settings ======================= */
-  var LIBRARY_TITLE = 'Library';          // heading on the book list
+  var LIBRARY_TITLE = 'Swipe Book';       // heading on the book list
   var TELEGRAM_LINK = 'https://t.me/SwipeBooks_bot/read';   // your bot's Mini App link
   var PER_PAGE = 30;                       // books added each time you scroll to the bottom
   var ZOOM = 2.5;                          // double-tap zoom factor
@@ -954,7 +955,7 @@ body.calm #rail { opacity: .35; }
       html = steps([
         'Tap ' + ICON_SHARE + ' <b>Share</b> in Safari’s toolbar.',
         'Scroll down and tap ' + ICON_ADD + ' <b>Add to Home Screen</b>.',
-        'Tap <b>Add</b>. The Books icon appears on your Home Screen.'
+        'Tap <b>Add</b>. The Swipe Book icon appears on your Home Screen.'
       ]) + '<p class="note">Don’t see Share? Tap ' + ICON_DOTS_H + ' first; newer iPhones keep Share in that menu.</p>';
       list.push({ label: 'Got it', primary: true, onClick: closeSheet });
     } else {
