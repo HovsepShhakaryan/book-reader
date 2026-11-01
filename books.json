@@ -19,6 +19,30 @@
       "file": "books/Object-Oriented_Programming.pdf"
     },
     {
+      "id": "generics",
+      "title": "Generics",
+      "author": "Pocket guide · 37 pages",
+      "file": "books/Generics.pdf"
+    },
+    {
+      "id": "collections-and-co",
+      "title": "Collections and Co.",
+      "author": "Pocket guide · 33 pages",
+      "file": "books/Collections_and_Co.pdf"
+    },
+    {
+      "id": "functional-programming",
+      "title": "Functional Programming",
+      "author": "Pocket guide · 37 pages",
+      "file": "books/Functional_Programming.pdf"
+    },
+    {
+      "id": "parallel-concurrent-programming",
+      "title": "Parallel & Concurrent Programming",
+      "author": "Pocket guide · 53 pages",
+      "file": "books/Parallel_and_Concurrent_Programming.pdf"
+    },
+    {
       "id": "kotlin-for-android",
       "title": "Kotlin for Android",
       "author": "Pocket guide · 55 pages",
