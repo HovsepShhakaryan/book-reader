@@ -13,6 +13,12 @@
       "file": "books/Kotlin_Fundamentals.pdf"
     },
     {
+      "id": "object-oriented-programming",
+      "title": "Object-Oriented Programming",
+      "author": "Pocket guide · 42 pages",
+      "file": "books/Object-Oriented_Programming.pdf"
+    },
+    {
       "id": "kotlin-for-android",
       "title": "Kotlin for Android",
       "author": "Pocket guide · 55 pages",
