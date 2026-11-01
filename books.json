@@ -66,7 +66,7 @@
       "author": "Pocket guide · 69 pages",
       "file": "books/Modern_Android_Architecture.pdf"
     },
-        {
+    {
       "id": "kotlin-notes-for-professionals",
       "title": "Kotlin Notes for Professionals",
       "author": "GoalKicker.com · 94 pages",
@@ -76,19 +76,19 @@
       "id": "kotlin-in-action",
       "title": "Kotlin in Action",
       "author": "Dmitry Jemerov & Svetlana Isakova · 363 pages",
-      "file": "books/Kotlin_in_Action_2017.pdf"
+      "file": "books/Kotlin_in_Action_(2017).pdf"
     },
     {
       "id": "kotlin-in-action-sample",
       "title": "Kotlin in Action — Sample Chapter",
       "author": "Dmitry Jemerov & Svetlana Isakova · 34 pages",
-      "file": "books/Kotlin_in_action.pdf"
+      "file": "books/Kotlin in action.pdf"
     },
     {
       "id": "kotlin-v-deistvii",
       "title": "Kotlin в действии",
       "author": "Дмитрий Жемеров & Светлана Исакова · 403 pages",
-      "file": "books/Kotlin_v_dieistvii_-_Dmitrii_Zhiemierov.pdf"
+      "file": "books/Kotlin v dieistvii - Dmitrii Zhiemierov.pdf"
     },
     {
       "id": "kotlin-for-android-developers",
@@ -100,19 +100,19 @@
       "id": "learn-kotlin-for-android-development",
       "title": "Learn Kotlin for Android Development",
       "author": "Peter Späth · 517 pages",
-      "file": "books/Kotlin_for_android_beginers.pdf"
+      "file": "books/Kotlin for android beginers.pdf"
     },
     {
       "id": "android-development-with-kotlin",
       "title": "Android Development with Kotlin",
       "author": "Marcin Moskala & Igor Wojda · 516 pages",
-      "file": "books/Android_Development_with_Kotlin.pdf"
+      "file": "books/Android Development with Kotlin.pdf"
     },
     {
       "id": "learn-android-studio-3-with-kotlin",
       "title": "Learn Android Studio 3 with Kotlin",
       "author": "Ted Hagos · 480 pages",
-      "file": "books/Learn_Android_Studio_3_with_Kotlin__Efficient_Android_App_Development__PDFDrive.com_.pdf"
+      "file": "books/Learn Android Studio 3 with Kotlin_ Efficient Android App Development ( PDFDrive.com ).pdf"
     },
     {
       "id": "android-notes-for-professionals",
@@ -124,7 +124,7 @@
       "id": "scjp-java-6-study-guide",
       "title": "SCJP Sun Certified Programmer for Java 6 Study Guide",
       "author": "Kathy Sierra & Bert Bates · 890 pages",
-      "file": "books/Java_Certification_SCJP_6.pdf"
+      "file": "books/Java Certification SCJP 6.pdf"
     },
     {
       "id": "software-testing-istqb-foundation",
