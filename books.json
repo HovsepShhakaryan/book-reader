@@ -203,6 +203,24 @@
       "title": "HTML5 Canvas Notes for Professionals",
       "author": "GoalKicker.com · 180 pages",
       "file": "books/HTML5CanvasNotesForProfessionals.pdf"
+    },
+    {
+      "id": "kotlin-notes-for-professionals",
+      "title": "Kotlin Notes for Professionals",
+      "author": "GoalKicker.com · 94 pages",
+      "file": "books/KotlinNotesForProfessionals.pdf"
+    },
+    {
+      "id": "matlab-notes-for-professionals",
+      "title": "MATLAB Notes for Professionals",
+      "author": "GoalKicker.com · 182 pages",
+      "file": "books/MATLABNotesForProfessionals.pdf"
+    },
+    {
+      "id": "perl-notes-for-professionals",
+      "title": "Perl Notes for Professionals",
+      "author": "GoalKicker.com · 109 pages",
+      "file": "books/PerlNotesForProfessionals.pdf"
     }
   ]
 }
