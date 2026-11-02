@@ -21,3 +21,10 @@ A PDF book reader for a Telegram Mini App. One page per screen, swipe up and dow
    - Telegram: `https://t.me/YOUR_BOT/read?startapp=history-of-armenia`
 
 The `id` may only use English letters, numbers, `-` and `_` (max 64 characters).
+
+## Reading features
+
+- **Portrait:** one page per swipe, double-tap to zoom, tap to show the top bar.
+- **Landscape:** reading mode. Pages fill the width and scroll smoothly. Tap **Auto-scroll** to read hands-free (5 speeds, tap the page to pause).
+- **Find a page:** pinch two fingers together (or tap the grid button) to see every page grouped by chapter. Or hold the right edge and slide to preview pages, then let go to jump.
+- Chapters come from the PDF's own bookmarks.

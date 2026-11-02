@@ -223,7 +223,20 @@ body {
   background: linear-gradient(rgba(13,15,20,.92) 45%, transparent);
   transition: opacity .25s ease, transform .25s ease;
 }
-#bar .name { flex: 1; min-width: 0; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#bar .titles { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+#bar .name { font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#bar .chap { font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.iconbtn {
+  display: grid; place-items: center; flex: none; width: 38px; height: 38px; padding: 0; border-radius: 999px;
+  color: var(--fg); background: var(--glass); border: 1px solid var(--line); cursor: pointer;
+}
+.iconbtn:focus-visible, #autoBtn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+#autoBtn {
+  display: none; align-items: center; gap: 6px; flex: none; height: 38px; padding: 0 14px 0 12px;
+  border-radius: 999px; border: 0; background: var(--accent); color: #fff; cursor: pointer;
+  font: 600 13px system-ui, -apple-system, sans-serif;
+}
+body.mode-read #autoBtn { display: inline-flex; }
 .pill {
   font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums;
   padding: 6px 11px; border-radius: 999px; background: var(--glass); border: 1px solid var(--line);
@@ -233,7 +246,132 @@ body {
   display: grid; place-items: center; width: 36px; height: 36px; border-radius: 999px;
   color: var(--fg); background: var(--glass); border: 1px solid var(--line); cursor: pointer;
 }
-body.calm #bar { opacity: 0; transform: translateY(-100%); pointer-events: none; }
+body.calm #bar, body.auto-on #bar { opacity: 0; transform: translateY(-100%); pointer-events: none; }
+
+/* ---------- reading mode (landscape): fit to width, smooth scroll ---------- */
+body.mode-read #feed { scroll-snap-type: none; padding-top: var(--top); padding-bottom: calc(var(--bottom) + 28px); }
+body.mode-read .slide {
+  height: auto; scroll-snap-align: none; scroll-snap-stop: normal;
+  display: flex; justify-content: center;
+  padding: 0 env(safe-area-inset-right, 0px) 10px env(safe-area-inset-left, 0px);
+}
+
+/* ---------- auto-scroll ---------- */
+#autoBar {
+  position: absolute; z-index: 6; left: 50%; bottom: calc(var(--bottom) + 14px); transform: translateX(-50%);
+  display: flex; align-items: center; gap: 2px; padding: 5px 6px 5px 5px; border-radius: 999px;
+  background: rgba(22,26,34,.94); border: 1px solid var(--line); white-space: nowrap;
+  transition: opacity .35s ease;
+}
+#autoBar.faded { opacity: 0; pointer-events: none; }
+#autoBar button {
+  display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 999px;
+  background: transparent; color: var(--fg); cursor: pointer;
+}
+#autoBar #apPlay { background: var(--accent); color: #fff; }
+#autoBar #apClose { color: var(--muted); }
+#autoBar button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+#autoBar .speed { width: 88px; display: flex; flex-direction: column; align-items: center; gap: 5px; }
+#autoBar .speed b { font-size: 14px; font-weight: 600; line-height: 16px; }
+#autoBar .dots { display: flex; gap: 4px; }
+#autoBar .dots i { width: 12px; height: 4px; border-radius: 2px; background: rgba(255,255,255,.18); }
+#autoBar .dots i.on { background: var(--accent); }
+#autoBar .sep { width: 1px; height: 28px; background: rgba(255,255,255,.14); margin: 0 8px; }
+#autoBar .left { display: flex; flex-direction: column; gap: 1px; padding-right: 4px; max-width: 230px; }
+#autoBar .left b { font-size: 13px; font-weight: 600; }
+#autoBar .left small { font-size: 12px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; }
+@media (max-width: 600px) { #autoBar .sep, #autoBar .left { display: none; } }
+#pausedChip {
+  position: absolute; z-index: 6; left: 50%; top: calc(var(--top) + 14px); transform: translateX(-50%);
+  display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 16px; border-radius: 999px;
+  background: rgba(22,26,34,.94); border: 1px solid var(--line); font-size: 13px; white-space: nowrap; pointer-events: none;
+}
+
+/* ---------- page wall ---------- */
+#wall {
+  position: fixed; top: 0; bottom: 0; left: 0; right: -40px; z-index: 12; background: var(--ink);
+  overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain; scrollbar-width: none; touch-action: pan-y;
+  padding: calc(var(--top) + 16px) calc(max(16px, env(safe-area-inset-right, 0px)) + 40px) calc(var(--bottom) + 110px) max(16px, env(safe-area-inset-left, 0px));
+}
+#wall::-webkit-scrollbar { display: none; width: 0; height: 0; }
+.wall-head { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+.wall-head .t { min-width: 0; }
+.wall-head b { display: block; font-size: 17px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.wall-head small { font-size: 13px; color: var(--muted); }
+#wallChips { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; margin: 0 -16px 8px 0; padding-bottom: 4px; }
+#wallChips::-webkit-scrollbar { display: none; }
+.chip {
+  flex: none; height: 34px; padding: 0 14px; border-radius: 999px; cursor: pointer; white-space: nowrap;
+  background: var(--card); border: 1px solid var(--line); color: var(--fg); font: 500 13px system-ui, -apple-system, sans-serif;
+}
+.chip.on { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+.wsec { margin-top: 18px; }
+.wsec-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+.wsec-head h3 { margin: 0; font-size: 14px; font-weight: 700; min-width: 0; overflow-wrap: anywhere; }
+.wsec-head span { font-size: 12px; color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.wgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(76px, 1fr)); gap: 14px 10px; }
+.wpg {
+  display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 0;
+  padding: 0; border: 0; background: none; color: inherit; font: inherit; cursor: pointer;
+}
+.wpg .th { width: 100%; border-radius: 6px; overflow: hidden; background: #e9ebf0; box-shadow: 0 4px 12px rgba(0,0,0,.4); }
+.wpg .th img { display: block; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .2s ease; }
+.wpg .th img.on { opacity: 1; }
+.wpg .n { font-size: 12px; line-height: 18px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.wpg.cur .th { box-shadow: 0 0 0 3px var(--accent), 0 6px 18px rgba(91,140,255,.35); }
+.wpg.cur .n { font-size: 10.5px; font-weight: 700; color: #fff; background: var(--accent); border-radius: 999px; padding: 0 7px; white-space: nowrap; }
+.wpg:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 8px; }
+#wallHint {
+  position: fixed; z-index: 13; left: 50%; bottom: calc(var(--bottom) + 22px); transform: translateX(-50%);
+  height: 38px; padding: 0 16px; border-radius: 999px; display: flex; align-items: center;
+  background: rgba(22,26,34,.94); border: 1px solid var(--line); font-size: 13px; white-space: nowrap; pointer-events: none;
+}
+
+/* ---------- hold and slide: page finder ---------- */
+#scrubZone {
+  position: absolute; z-index: 4; width: 30px; touch-action: none; cursor: ns-resize;
+  right: calc(env(safe-area-inset-right, 0px) + 6px);
+  top: calc(var(--top) + 76px); bottom: calc(var(--bottom) + 64px);
+}
+#scrubZone::after {
+  content: ""; position: absolute; right: 7px; top: 50%; width: 4px; height: 44px; margin-top: -22px;
+  border-radius: 2px; background: rgba(255,255,255,.4); transition: opacity .25s ease;
+}
+body.calm #scrubZone::after { opacity: 0; }
+body.auto-on #scrubZone { display: none; }
+#scrubUI { position: absolute; inset: 0; z-index: 9; background: rgba(13,15,20,.68); pointer-events: none; }
+#sTip {
+  position: absolute; left: 50%; top: calc(var(--top) + 14px); transform: translateX(-50%);
+  height: 36px; padding: 0 16px; border-radius: 999px; display: flex; align-items: center;
+  background: rgba(22,26,34,.94); border: 1px solid var(--line); font-size: 13px; white-space: nowrap;
+}
+#sRail {
+  position: absolute; width: 4px; border-radius: 2px; background: rgba(255,255,255,.16);
+  right: calc(env(safe-area-inset-right, 0px) + 19px);
+  top: calc(var(--top) + 76px); bottom: calc(var(--bottom) + 64px);
+}
+#sFill { position: absolute; left: 0; right: 0; top: 0; height: 0; border-radius: 2px; background: var(--accent); }
+#sTicks i { position: absolute; left: -5px; width: 14px; height: 2px; border-radius: 1px; background: rgba(255,255,255,.45); }
+#sHere { position: absolute; left: -6px; width: 16px; height: 16px; margin-top: -8px; border-radius: 999px; border: 2px solid var(--fg); background: var(--ink); box-sizing: border-box; }
+#sGlow { position: absolute; left: -26px; width: 56px; height: 56px; margin-top: -28px; border-radius: 999px; background: rgba(91,140,255,.22); }
+#sKnob { position: absolute; left: -12px; width: 28px; height: 28px; margin-top: -14px; border-radius: 999px; background: var(--accent); border: 3px solid #fff; box-sizing: border-box; box-shadow: 0 4px 14px rgba(0,0,0,.5); }
+#sCard {
+  position: absolute; right: calc(env(safe-area-inset-right, 0px) + 66px); width: var(--cw, 180px);
+  border-radius: 16px; overflow: hidden; background: var(--card); border: 1px solid rgba(255,255,255,.12);
+  box-shadow: 0 18px 40px rgba(0,0,0,.55); transition: opacity .15s ease;
+}
+#sCard .pv { position: relative; width: 100%; aspect-ratio: var(--ar, 9 / 16); background: #e9ebf0; display: grid; place-items: center; color: #6b7280; font-size: 13px; }
+#sCard .pv img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+#sCard .cap { padding: 10px 12px 12px; display: flex; flex-direction: column; gap: 3px; }
+#sCard .pg { display: flex; align-items: baseline; gap: 6px; font-variant-numeric: tabular-nums; }
+#sCard .pg b { font-size: 20px; line-height: 24px; }
+#sCard .pg span { font-size: 13px; color: var(--muted); }
+#sCard .ch { font-size: 13px; font-weight: 600; color: #8fb0ff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#sArrow {
+  position: absolute; right: calc(env(safe-area-inset-right, 0px) + 57px); width: 0; height: 0;
+  border-top: 9px solid transparent; border-bottom: 9px solid transparent; border-left: 9px solid var(--card);
+}
+#scrubUI.cancel #sCard, #scrubUI.cancel #sArrow { opacity: .3; }
 
 #rail {
   position: absolute; z-index: 4; width: 3px; border-radius: 3px; background: var(--line);
@@ -246,11 +384,14 @@ body.calm #rail { opacity: .35; }
 
 #hint {
   position: absolute; z-index: 4; left: 50%; transform: translateX(-50%);
-  bottom: calc(var(--bottom) + 32px);
-  font-size: 13px; padding: 9px 14px; border-radius: 999px; white-space: nowrap;
+  bottom: calc(var(--bottom) + 28px);
+  display: flex; flex-direction: column; align-items: center; gap: 2px; text-align: center;
+  font-size: 13px; padding: 9px 16px; border-radius: 18px; white-space: nowrap;
   background: var(--glass); border: 1px solid var(--line); pointer-events: none;
   transition: opacity .4s ease;
 }
+#hint small { font-size: 12px; color: var(--muted); }
+#hint small:empty { display: none; }
 #hint.gone { opacity: 0; }
 
 #loading {
@@ -281,13 +422,13 @@ body.calm #rail { opacity: .35; }
 #rotate { position: fixed; inset: 0; z-index: 30; display: none; place-items: center; text-align: center; background: var(--ink); padding: 24px; }
 #rotate p { margin: 12px 0 4px; font-size: 16px; font-weight: 700; }
 #rotate small { color: var(--muted); }
-@media (orientation: landscape) and (max-height: 540px) { #rotate { display: grid; } }
+/* landscape is supported now (reading mode), so the "turn your phone" screen stays hidden */
 
 #toast {
   position: fixed; z-index: 40; left: 16px; right: 16px; top: calc(var(--top) + 60px);
   background: #3a1820; color: #ffd7de; border: 1px solid #6b2a37; border-radius: 12px; padding: 12px 14px; font-size: 14px;
 }
-@media (prefers-reduced-motion: reduce) { #bar, #rail, #railFill, #hint, #zoom { transition: none; } }
+@media (prefers-reduced-motion: reduce) { #bar, #rail, #railFill, #hint, #zoom, #autoBar, .wpg .th img { transition: none; } }
 </style>
 </head>
 <body>
@@ -331,16 +472,78 @@ body.calm #rail { opacity: .35; }
     <button id="backBtn" type="button" aria-label="Back to library" hidden>
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
     </button>
-    <div class="name" id="bookName"></div>
+    <div class="titles">
+      <div class="name" id="bookName"></div>
+      <div class="chap" id="chapName" hidden></div>
+    </div>
     <div class="pill"><b id="cur">1</b> / <span id="tot">–</span></div>
+    <button id="wallBtn" class="iconbtn" type="button" aria-label="See all pages">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></svg>
+    </button>
+    <button id="autoBtn" type="button">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12.5-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5z"/></svg>
+      Auto-scroll
+    </button>
   </header>
   <div id="rail" hidden><div id="railFill"></div></div>
-  <div id="hint">Swipe up · tap for menu · double-tap to zoom</div>
+  <div id="hint"><span id="hintMain">Swipe up · tap for menu · double-tap to zoom</span><small id="hintSub"></small></div>
+
+  <div id="scrubZone" aria-hidden="true"></div>
+  <div id="scrubUI" hidden>
+    <div id="sTip">Release to jump · slide left to cancel</div>
+    <div id="sRail">
+      <div id="sFill"></div>
+      <div id="sTicks"></div>
+      <div id="sHere"></div>
+      <div id="sGlow"></div>
+      <div id="sKnob"></div>
+    </div>
+    <div id="sCard">
+      <div class="pv"><span id="sPh"></span><img id="sImg" alt="" hidden></div>
+      <div class="cap">
+        <div class="pg"><b id="sPage">Page 1</b><span id="sTot"></span></div>
+        <div class="ch" id="sChap"></div>
+      </div>
+    </div>
+    <div id="sArrow"></div>
+  </div>
+
+  <div id="pausedChip" hidden>
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>
+    Paused · tap the page to continue
+  </div>
+  <div id="autoBar" hidden>
+    <button type="button" id="apPlay" aria-label="Pause"></button>
+    <button type="button" id="apSlower" aria-label="Slower">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 12h12"/></svg>
+    </button>
+    <div class="speed"><b id="apSpeed">Medium</b><span class="dots" id="apDots"><i></i><i></i><i></i><i></i><i></i></span></div>
+    <button type="button" id="apFaster" aria-label="Faster">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 12h12M12 6v12"/></svg>
+    </button>
+    <span class="sep"></span>
+    <div class="left"><b id="apLeft">About 3 min left</b><small id="apWhere"></small></div>
+    <button type="button" id="apClose" aria-label="Stop auto-scroll">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+  </div>
   <div id="loading"><div>
     <div id="loadText">Opening book…</div>
     <div class="bar-track"><div class="bar-fill" id="loadFill"></div></div>
   </div></div>
 </section>
+
+<div id="wall" hidden>
+  <div class="wall-head">
+    <button id="wallClose" class="iconbtn" type="button" aria-label="Close page wall">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+    <div class="t"><b id="wallTitle"></b><small id="wallSub"></small></div>
+  </div>
+  <div id="wallChips"></div>
+  <div id="wallBody"></div>
+</div>
+<div id="wallHint" hidden>Tap a page to jump · spread two fingers to go back</div>
 
 <div id="zoom"><div id="zoomInner"></div></div>
 <div id="zoomTag" hidden>Drag to move · double-tap to zoom out</div>
@@ -398,7 +601,7 @@ body.calm #rail { opacity: .35; }
       try { if (tgAtLeast('6.1')) { tg.setHeaderColor('#0d0f14'); tg.setBackgroundColor('#0d0f14'); } } catch (e) {}
       try { if (tgAtLeast('7.10')) tg.setBottomBarColor('#0d0f14'); } catch (e) {}
       try { if (tgAtLeast('7.7')) tg.disableVerticalSwipes(); } catch (e) {}   // swipes turn pages instead of closing the app
-      try { if (tgAtLeast('8.0')) { tg.requestFullscreen(); tg.lockOrientation(); } } catch (e) {}
+      try { if (tgAtLeast('8.0')) { tg.requestFullscreen(); if (tg.unlockOrientation) tg.unlockOrientation(); } } catch (e) {}   // portrait swipes, landscape reads
       try {
         tg.onEvent('safeAreaChanged', applyInsets);
         tg.onEvent('contentSafeAreaChanged', applyInsets);
@@ -605,10 +808,23 @@ body.calm #rail { opacity: .35; }
 
   /* ======================= reader state ======================= */
   var doc = null, sizes = [], slides = [], current = 0, zoomed = false, token = 0, book = null, cameFromLibrary = false;
+  var readMode = false;                 // landscape: fit to width, smooth scroll
+  var READ_MAX_W = 860;                 // page width cap in reading mode (wide screens)
+  var offs = [], hts = [];              // slide tops and heights (reading mode)
+  var anchor = { i: 0, f: 0 };          // where the reader is, kept across rotations
+  var resizing = false;
+  var chapters = [];                    // [{title, start}] from the PDF's bookmarks
+  var chapName = $('chapName');
+
+  function isReadMode() { return window.innerWidth > window.innerHeight * 1.05; }
 
   function fitBox(i) {
     var s = slides[i].el, cs = getComputedStyle(s);
     var aw = s.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+    if (readMode) {
+      var kw = Math.min(aw, READ_MAX_W) / sizes[i].w;
+      return { w: Math.floor(sizes[i].w * kw), h: Math.floor(sizes[i].h * kw), k: kw };
+    }
     var ah = s.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
     var k = Math.min(aw / sizes[i].w, ah / sizes[i].h);
     return { w: Math.floor(sizes[i].w * k), h: Math.floor(sizes[i].h * k), k: k };
@@ -618,6 +834,16 @@ body.calm #rail { opacity: .35; }
     slides[i].page.style.width = b.w + 'px';
     slides[i].page.style.height = b.h + 'px';
     return b;
+  }
+  function measure() {
+    offs = []; hts = [];
+    for (var i = 0; i < slides.length; i++) { offs.push(slides[i].el.offsetTop); hts.push(slides[i].el.offsetHeight); }
+  }
+  function pageAtY(y) {
+    var lo = 0, hi = offs.length - 1;
+    if (hi < 0) return 0;
+    while (lo < hi) { var mid = (lo + hi + 1) >> 1; if (offs[mid] <= y) lo = mid; else hi = mid - 1; }
+    return lo;
   }
 
   function render(i) {
@@ -629,7 +855,7 @@ body.calm #rail { opacity: .35; }
       if (my !== token) return;
       var b = layout(i);
       var v1 = page.getViewport({ scale: 1 });
-      var scale = b.k * dpr();
+      var scale = b.k * (readMode ? Math.min(dpr(), 2) : dpr());
       if (v1.width * v1.height * scale * scale > MAX_PIXELS) scale = Math.sqrt(MAX_PIXELS / (v1.width * v1.height));
       var vp = page.getViewport({ scale: scale });
       var c = document.createElement('canvas');
@@ -650,24 +876,90 @@ body.calm #rail { opacity: .35; }
     sl.ph.hidden = false; sl.rendered = false;
   }
   function updateWindow() {
-    for (var i = 0; i < slides.length; i++) { if (Math.abs(i - current) <= 2) render(i); else release(i); }
+    for (var i = 0; i < slides.length; i++) {
+      var keep = readMode ? (i >= current - 1 && i <= current + 2) : Math.abs(i - current) <= 2;
+      if (keep) render(i); else release(i);
+    }
   }
+
+  /* chapters from the PDF bookmarks (top level) */
+  function loadChapters(d) {
+    return d.getOutline().then(function (ol) {
+      if (!ol || !ol.length) return [];
+      return Promise.all(ol.map(function (it) {
+        var p = typeof it.dest === 'string' ? d.getDestination(it.dest) : Promise.resolve(it.dest);
+        return p.then(function (ds) {
+          if (!ds || ds[0] == null) return null;
+          if (typeof ds[0] === 'number') return { title: it.title, start: ds[0] };
+          return d.getPageIndex(ds[0]).then(function (ix) { return { title: it.title, start: ix }; });
+        }).catch(function () { return null; });
+      }));
+    }).then(function (list) {
+      list = (list || []).filter(Boolean).sort(function (a, b) { return a.start - b.start; });
+      var out = [];
+      list.forEach(function (c) {
+        if (!out.length || out[out.length - 1].start !== c.start) out.push({ title: String(c.title || '').trim() || 'Untitled', start: c.start });
+      });
+      if (out.length > 1 && out[0].start === 0) out[0].title = 'Start';
+      else if (out.length && out[0].start > 0) out.unshift({ title: 'Start', start: 0 });
+      return out;
+    }).catch(function () { return []; });
+  }
+  function chapterIndexAt(i) {
+    var ci = -1;
+    for (var k = 0; k < chapters.length; k++) { if (chapters[k].start <= i) ci = k; else break; }
+    return ci;
+  }
+  function chapterEnd(ci) { return chapters[ci + 1] ? chapters[ci + 1].start : sizes.length; }
+
   function updateCounter() {
     curEl.textContent = current + 1;
     var n = slides.length || 1;
     railFill.style.height = (100 / n) + '%';
     railFill.style.top = (100 * current / n) + '%';
+    var ci = chapterIndexAt(current);
+    if (ci >= 0 && chapters.length > 1) { chapName.textContent = chapters[ci].title; chapName.hidden = false; }
+    else chapName.hidden = true;
+    if (autoOn) updateTimeLeft();
+  }
+
+  function goToPage(i, f) {
+    if (!slides.length) return;
+    i = Math.max(0, Math.min(slides.length - 1, i));
+    if (readMode) feed.scrollTop = offs[i] + (f || 0) * hts[i];
+    else feed.scrollTop = i * feed.clientHeight;
+    current = i; anchor = { i: i, f: f || 0 };
+    updateCounter(); updateWindow();
+    if (book) savePage(book.id, current + 1);
+  }
+
+  function updateHint() {
+    hintMain.textContent = readMode ? 'Scroll to read · tap for menu' : 'Swipe up · tap for menu · double-tap to zoom';
+    hintSub.textContent = readMode ? 'Tap Auto-scroll to read hands-free' : 'Pinch to see all pages · hold the right edge to jump';
+  }
+  var hintMain = $('hintMain'), hintSub = $('hintSub');
+
+  function applyMode() {
+    var r = isReadMode();
+    if (r === readMode) return false;
+    readMode = r;
+    document.body.classList.toggle('mode-read', r);
+    if (!r) stopAuto();
+    updateHint();
+    return true;
   }
 
   /* ======================= open / close a book ======================= */
   function openBook(b, fromLibrary) {
     var my = ++token;
     book = b; cameFromLibrary = !!fromLibrary;
-    closeZoom();
+    closeZoom(); closeWall(); stopAuto(); resetThumbs(); chapters = []; wallFor = -1;
+    applyMode(); updateHint();
     library.hidden = true; reader.hidden = false;
     bookName.textContent = b.title || b.id;
+    chapName.hidden = true;
     backBtn.hidden = inTelegram;   // inside Telegram the native Back button is used
-    feed.innerHTML = ''; slides = []; sizes = []; totEl.textContent = '–'; curEl.textContent = '1';
+    feed.innerHTML = ''; slides = []; sizes = []; offs = []; hts = []; totEl.textContent = '–'; curEl.textContent = '1';
     loading.hidden = false; loadText.textContent = 'Opening book…'; loadFill.style.width = '0';
     hint.classList.remove('gone');
     showControls();
@@ -686,6 +978,7 @@ body.calm #rail { opacity: .35; }
       for (var p = 1; p <= doc.numPages; p++) jobs.push(doc.getPage(p).then(function (pg) {
         var v = pg.getViewport({ scale: 1 }); return { w: v.width, h: v.height };
       }));
+      loadChapters(doc).then(function (ch) { if (my === token) { chapters = ch; updateCounter(); } });
       return Promise.all(jobs).then(function (sz) {
         if (my !== token) return;
         sizes = sz;
@@ -699,11 +992,10 @@ body.calm #rail { opacity: .35; }
         });
         feed.appendChild(frag);
         slides.forEach(function (_, i) { layout(i); });
+        measure();
         totEl.textContent = doc.numPages;
-        current = startPage - 1;
-        feed.scrollTop = current * feed.clientHeight;
+        goToPage(startPage - 1, 0);
         if (current > 0) hint.classList.add('gone');
-        updateCounter(); updateWindow();
         loading.hidden = true;
       });
     }).catch(function (e) {
@@ -715,9 +1007,10 @@ body.calm #rail { opacity: .35; }
 
   function closeBook() {
     token++;
-    closeZoom();
+    closeZoom(); closeWall(); stopAuto(); endScrub(null, true);
     if (doc) { doc.destroy(); doc = null; }
-    feed.innerHTML = ''; slides = [];
+    resetThumbs(); chapters = []; wallFor = -1;
+    feed.innerHTML = ''; slides = []; offs = []; hts = [];
     reader.hidden = true; library.hidden = false;
     document.body.classList.remove('calm');
     if (inTelegram) { try { tg.BackButton.hide(); } catch (e) {} }
@@ -725,21 +1018,40 @@ body.calm #rail { opacity: .35; }
     setTimeout(nextThumb, 300);
   }
   backBtn.addEventListener('click', closeBook);
-  if (inTelegram) { try { tg.BackButton.onClick(function () { if (zoomed) closeZoom(); else closeBook(); }); } catch (e) {} }
+  if (inTelegram) {
+    try {
+      tg.BackButton.onClick(function () {
+        if (!wall.hidden) closeWall();
+        else if (zoomed) closeZoom();
+        else closeBook();
+      });
+    } catch (e) {}
+  }
 
   /* ======================= scrolling ======================= */
   var raf = 0, saveTimer = 0;
+  function onScroll() {
+    if (resizing || !slides.length) return;
+    var i;
+    if (readMode) {
+      var top = feed.scrollTop;
+      var ti = pageAtY(top);
+      anchor = { i: ti, f: Math.max(0, Math.min(1, (top - offs[ti]) / Math.max(1, hts[ti]))) };
+      i = pageAtY(top + feed.clientHeight * 0.35);
+    } else {
+      i = Math.round(feed.scrollTop / feed.clientHeight);
+      anchor = { i: i, f: 0 };
+    }
+    if (i !== current && i >= 0 && i < slides.length) {
+      current = i; updateCounter(); updateWindow();
+      if (i > 0) { hint.classList.add('gone'); hideControls(); }
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(function () { if (book) savePage(book.id, current + 1); }, 600);
+    }
+  }
   feed.addEventListener('scroll', function () {
     cancelAnimationFrame(raf);
-    raf = requestAnimationFrame(function () {
-      var i = Math.round(feed.scrollTop / feed.clientHeight);
-      if (i !== current && i >= 0 && i < slides.length) {
-        current = i; updateCounter(); updateWindow();
-        if (i > 0) { hint.classList.add('gone'); hideControls(); }
-        clearTimeout(saveTimer);
-        saveTimer = setTimeout(function () { if (book) savePage(book.id, current + 1); }, 600);
-      }
-    });
+    raf = requestAnimationFrame(onScroll);
   }, { passive: true });
 
   /* ======================= taps ======================= */
@@ -774,6 +1086,21 @@ body.calm #rail { opacity: .35; }
     el.addEventListener('mouseup', function (e) { if (Date.now() - lastTouch > 800) end(e.clientX, e.clientY); });
   }
 
+  /* pinch: fingers together opens the page wall, apart closes it */
+  function bindPinch(el, onTogether, onApart) {
+    var d0 = 0, fired = false;
+    function dist(t) { return Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY); }
+    el.addEventListener('touchstart', function (e) { if (e.touches.length === 2) { d0 = dist(e.touches); fired = false; } }, { passive: true });
+    el.addEventListener('touchmove', function (e) {
+      if (e.touches.length !== 2 || !d0 || fired) return;
+      var r = dist(e.touches) / d0;
+      if (r < 0.72 && onTogether) { fired = true; onTogether(); }
+      else if (r > 1.4 && onApart) { fired = true; onApart(); }
+    }, { passive: true });
+    el.addEventListener('touchend', function (e) { if (e.touches.length < 2) d0 = 0; }, { passive: true });
+  }
+  document.addEventListener('gesturestart', function (e) { e.preventDefault(); });   // stop iPhone page zoom
+
   var calmTimer = 0;
   function showControls() {
     document.body.classList.remove('calm');
@@ -783,17 +1110,24 @@ body.calm #rail { opacity: .35; }
   function toggleControls() { if (document.body.classList.contains('calm')) showControls(); else hideControls(); }
 
   /* ======================= zoom ======================= */
+  function slideAt(x, y) {
+    for (var i = Math.max(0, current - 1); i <= Math.min(slides.length - 1, current + 2); i++) {
+      var r = slides[i].page.getBoundingClientRect();
+      if (y >= r.top && y <= r.bottom) return i;
+    }
+    return current;
+  }
   function openZoom(x, y) {
-    var sl = slides[current];
-    if (!sl || zoomed || !doc) return;
+    if (zoomed || !doc || !slides.length) return;
+    var idx = slideAt(x, y), sl = slides[idx];
     var r = sl.page.getBoundingClientRect();
     var fx = Math.min(1, Math.max(0, (x - r.left) / r.width));
     var fy = Math.min(1, Math.max(0, (y - r.top) / r.height));
     zoomed = true;
     var my = token;
-    doc.getPage(current + 1).then(function (page) {
+    doc.getPage(idx + 1).then(function (page) {
       if (my !== token || !zoomed) return;
-      var b = fitBox(current), cssScale = b.k * ZOOM;
+      var b = fitBox(idx), cssScale = b.k * (readMode ? 1.8 : ZOOM);
       var v1 = page.getViewport({ scale: 1 });
       var px = cssScale * dpr();
       if (v1.width * v1.height * px * px > MAX_PIXELS) px = Math.sqrt(MAX_PIXELS / (v1.width * v1.height));
@@ -824,29 +1158,377 @@ body.calm #rail { opacity: .35; }
       zoomInner.innerHTML = '';
     }, 200);
   }
-  bindTaps(feed, openZoom, toggleControls);
+
+  /* ======================= small page pictures (page wall, page finder) ======================= */
+  var tUrls = [], tWait = {}, tQ = [], tBusy = false, THUMB_W = 240;
+  function wantThumb(i, cb, urgent) {
+    if (tUrls[i]) { if (cb) cb(tUrls[i]); return; }
+    if (cb) (tWait[i] = tWait[i] || []).push(cb);
+    var at = tQ.indexOf(i);
+    if (at >= 0) { if (urgent) { tQ.splice(at, 1); tQ.unshift(i); } }
+    else if (urgent) tQ.unshift(i); else tQ.push(i);
+    pumpThumbs();
+  }
+  function pumpThumbs() {
+    if (tBusy || !tQ.length || !doc) return;
+    tBusy = true;
+    var i = tQ.shift(), my = token;
+    doc.getPage(i + 1).then(function (page) {
+      var v1 = page.getViewport({ scale: 1 });
+      var vp = page.getViewport({ scale: THUMB_W / v1.width });
+      var c = document.createElement('canvas');
+      c.width = Math.round(vp.width); c.height = Math.round(vp.height);
+      var ctx = c.getContext('2d');
+      ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.width, c.height);
+      return page.render({ canvasContext: ctx, viewport: vp }).promise.then(function () {
+        return new Promise(function (res) {
+          c.toBlob(function (bl) { c.width = 0; c.height = 0; res(bl); }, 'image/jpeg', 0.78);
+        });
+      });
+    }).then(function (blob) {
+      if (my !== token || !blob) return;
+      var url = URL.createObjectURL(blob);
+      tUrls[i] = url;
+      (tWait[i] || []).forEach(function (f) { try { f(url); } catch (e) {} });
+      delete tWait[i];
+    }).catch(function () {}).then(function () {
+      tBusy = false;
+      setTimeout(pumpThumbs, 0);
+    });
+  }
+  function resetThumbs() {
+    tUrls.forEach(function (u) { if (u) URL.revokeObjectURL(u); });
+    tUrls = []; tWait = {}; tQ = [];
+  }
+
+  /* ======================= page wall ======================= */
+  var wall = $('wall'), wallBody = $('wallBody'), wallChips = $('wallChips'), wallSub = $('wallSub');
+  var wallTitle = $('wallTitle'), wallHint = $('wallHint'), wallFor = -1, wallObs = null;
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+
+  function buildWall() {
+    if (wallFor === token) return;
+    wallFor = token;
+    wallBody.innerHTML = ''; wallChips.innerHTML = '';
+    if (wallObs) wallObs.disconnect();
+    wallObs = ('IntersectionObserver' in window) ? new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        wallObs.unobserve(en.target);
+        var i = en.target._i, img = en.target.querySelector('img');
+        wantThumb(i, function (url) { img.onload = function () { img.classList.add('on'); }; img.src = url; });
+      });
+    }, { root: wall, rootMargin: '500px 0px' }) : null;
+
+    wallTitle.textContent = book ? (book.title || book.id) : '';
+    var secs = chapters.length ? chapters : [{ title: 'All pages', start: 0 }];
+    wallSub.textContent = sizes.length + ' pages' + (chapters.length > 1 ? ' · ' + chapters.length + ' sections' : '');
+    var ar = sizes[0].w + ' / ' + sizes[0].h;
+    secs.forEach(function (ch, ci) {
+      var end = (secs[ci + 1] ? secs[ci + 1].start : sizes.length) - 1;
+      var sec = el('section', 'wsec'); sec.id = 'wsec' + ci;
+      var head = el('div', 'wsec-head');
+      head.appendChild(el('h3', null, ch.title));
+      head.appendChild(el('span', null, end > ch.start ? 'p. ' + (ch.start + 1) + '–' + (end + 1) : 'p. ' + (ch.start + 1)));
+      sec.appendChild(head);
+      var grid = el('div', 'wgrid');
+      for (var p = ch.start; p <= end; p++) {
+        var bt = el('button', 'wpg'); bt.type = 'button'; bt._i = p;
+        bt.setAttribute('aria-label', 'Page ' + (p + 1));
+        var th = el('div', 'th'); th.style.aspectRatio = ar; th._i = p;
+        var img = el('img'); img.alt = ''; th.appendChild(img);
+        bt.appendChild(th); bt.appendChild(el('span', 'n', String(p + 1)));
+        grid.appendChild(bt);
+        if (wallObs) wallObs.observe(th); else wantThumb(p, (function (im) { return function (u) { im.src = u; im.classList.add('on'); }; })(img));
+      }
+      sec.appendChild(grid);
+      wallBody.appendChild(sec);
+      if (chapters.length > 1) {
+        var chip = el('button', 'chip', ch.title); chip.type = 'button'; chip._ci = ci;
+        wallChips.appendChild(chip);
+      }
+    });
+    wallChips.hidden = chapters.length < 2;
+  }
+  function markWall() {
+    var old = wallBody.querySelectorAll('.wpg.cur');
+    for (var k = 0; k < old.length; k++) { old[k].classList.remove('cur'); old[k].querySelector('.n').textContent = String(old[k]._i + 1); }
+    var btns = wallBody.querySelectorAll('.wpg');
+    for (var j = 0; j < btns.length; j++) {
+      if (btns[j]._i === current) { btns[j].classList.add('cur'); btns[j].querySelector('.n').textContent = 'You are here'; break; }
+    }
+    var ci = chapterIndexAt(current), chips = wallChips.querySelectorAll('.chip');
+    for (var c = 0; c < chips.length; c++) chips[c].classList.toggle('on', chips[c]._ci === ci);
+    var on = wallChips.querySelector('.chip.on');
+    if (on) wallChips.scrollLeft = on.offsetLeft - 16;
+  }
+  function openWall() {
+    if (!doc || !sizes.length) return;
+    closeZoom(); endScrub(null, true);
+    if (autoOn) pause();
+    buildWall(); markWall();
+    wall.hidden = false; wallHint.hidden = false;
+    var cur = wallBody.querySelector('.wpg.cur');
+    if (cur) wall.scrollTop = Math.max(0, cur.offsetTop - wall.clientHeight / 2 + cur.offsetHeight / 2);
+  }
+  function closeWall() { wall.hidden = true; wallHint.hidden = true; }
+  wallBody.addEventListener('click', function (e) {
+    var bt = e.target.closest('.wpg');
+    if (!bt) return;
+    closeWall(); goToPage(bt._i, 0); hideControls();
+  });
+  wallChips.addEventListener('click', function (e) {
+    var chip = e.target.closest('.chip');
+    if (!chip) return;
+    var sec = $('wsec' + chip._ci);
+    if (sec) wall.scrollTop = sec.offsetTop - 12;
+  });
+  $('wallClose').addEventListener('click', closeWall);
+  $('wallBtn').addEventListener('click', openWall);
+  bindPinch(feed, openWall, null);
+  bindPinch(wall, null, closeWall);
+
+  /* ======================= hold and slide: page finder on the right edge ======================= */
+  var scrubZone = $('scrubZone'), scrubUI = $('scrubUI'), sRail = $('sRail'), sFill = $('sFill');
+  var sKnob = $('sKnob'), sGlow = $('sGlow'), sHere = $('sHere'), sTicks = $('sTicks');
+  var sCard = $('sCard'), sImg = $('sImg'), sPh = $('sPh'), sPage = $('sPage'), sTot = $('sTot'), sChap = $('sChap');
+  var sArrow = $('sArrow'), sTip = $('sTip');
+  var scrub = null;
+
+  function showScrubUI() {
+    if (!scrub || scrub.shown) return;
+    scrub.shown = true;
+    hint.classList.add('gone');
+    var aspect = sizes[0].h / sizes[0].w;
+    var cw = Math.max(104, Math.min(180, (window.innerHeight - 150) / aspect));
+    reader.style.setProperty('--cw', Math.round(cw) + 'px');
+    reader.style.setProperty('--ar', sizes[0].w + ' / ' + sizes[0].h);
+    scrubUI.hidden = false;
+    var H = sRail.clientHeight, n = sizes.length;
+    sTicks.innerHTML = '';
+    chapters.forEach(function (c) {
+      if (c.start === 0) return;
+      var t = el('i'); t.style.top = Math.round(c.start / Math.max(1, n - 1) * H) - 1 + 'px'; sTicks.appendChild(t);
+    });
+    sHere.style.top = Math.round(current / Math.max(1, n - 1) * H) + 'px';
+    sTot.textContent = 'of ' + n;
+  }
+  function scrubTo(y, x) {
+    var r = sRail.getBoundingClientRect(), n = sizes.length;
+    var f = Math.max(0, Math.min(1, (y - r.top) / Math.max(1, r.height)));
+    var i = Math.round(f * (n - 1));
+    scrub.cancel = x < window.innerWidth * 0.4;
+    scrubUI.classList.toggle('cancel', scrub.cancel);
+    sTip.textContent = scrub.cancel ? 'Release to cancel' : 'Release to jump · slide left to cancel';
+    var ky = Math.round(i / Math.max(1, n - 1) * r.height);
+    sKnob.style.top = ky + 'px'; sGlow.style.top = ky + 'px'; sFill.style.height = ky + 'px';
+    var cy = r.top + ky, ch = sCard.offsetHeight;
+    var top = Math.max(r.top - 40, Math.min(window.innerHeight - ch - 12, cy - ch / 2));
+    sCard.style.top = Math.round(top) + 'px';
+    sArrow.style.top = Math.round(cy - 9) + 'px';
+    if (i === scrub.i && scrub.drawn) return;
+    scrub.i = i; scrub.drawn = true;
+    sPage.textContent = 'Page ' + (i + 1);
+    var ci = chapterIndexAt(i);
+    sChap.textContent = ci >= 0 && chapters.length > 1 ? chapters[ci].title : '';
+    sChap.hidden = !sChap.textContent;
+    if (tUrls[i]) { sImg.src = tUrls[i]; sImg.hidden = false; sPh.hidden = true; }
+    else {
+      sImg.hidden = true; sPh.hidden = false; sPh.textContent = 'Page ' + (i + 1);
+      wantThumb(i, function (u) { if (scrub && scrub.i === i) { sImg.src = u; sImg.hidden = false; sPh.hidden = true; } }, true);
+    }
+  }
+  scrubZone.addEventListener('pointerdown', function (e) {
+    if (!doc || !sizes.length || zoomed || scrub) return;
+    e.preventDefault();
+    try { scrubZone.setPointerCapture(e.pointerId); } catch (er) {}
+    scrub = { id: e.pointerId, x0: e.clientX, y0: e.clientY, t0: Date.now(), moved: false, shown: false, i: -1, cancel: false, drawn: false, lx: e.clientX, ly: e.clientY };
+    if (autoOn && playing) pause();
+    scrub.timer = setTimeout(function () { if (scrub) { showScrubUI(); scrubTo(scrub.ly, scrub.lx); } }, 180);
+  });
+  scrubZone.addEventListener('pointermove', function (e) {
+    if (!scrub || e.pointerId !== scrub.id) return;
+    scrub.lx = e.clientX; scrub.ly = e.clientY;
+    if (!scrub.moved && Math.hypot(e.clientX - scrub.x0, e.clientY - scrub.y0) > 8) { scrub.moved = true; showScrubUI(); }
+    if (scrub.shown) scrubTo(e.clientY, e.clientX);
+  });
+  function endScrub(e, cancelled) {
+    if (!scrub) return;
+    var s = scrub; scrub = null;
+    clearTimeout(s.timer);
+    scrubUI.hidden = true; scrubUI.classList.remove('cancel');
+    if (cancelled) return;
+    if (!s.moved && Date.now() - s.t0 < 300) { toggleControls(); return; }
+    if (s.cancel || s.i < 0 || s.i === current) return;
+    goToPage(s.i, 0); hideControls(); hint.classList.add('gone');
+  }
+  scrubZone.addEventListener('pointerup', function (e) { if (scrub && e.pointerId === scrub.id) endScrub(e, false); });
+  scrubZone.addEventListener('pointercancel', function (e) { if (scrub && e.pointerId === scrub.id) endScrub(e, true); });
+
+  /* ======================= auto-scroll (reading mode) ======================= */
+  var SPEEDS = [
+    { name: 'Very slow', ppm: 0.4 }, { name: 'Slow', ppm: 0.6 }, { name: 'Medium', ppm: 0.9 },
+    { name: 'Fast', ppm: 1.3 }, { name: 'Very fast', ppm: 2 }
+  ];                                     // ppm = pages per minute
+  var autoOn = false, playing = false, speedIx = 2, apRaf = 0, apLast = 0, apPos = 0, apFrames = 0;
+  var wakeLock = null, fadeT = 0, pausedByTouch = false;
+  var autoBar = $('autoBar'), apPlay = $('apPlay'), apSpeed = $('apSpeed'), apDots = $('apDots');
+  var apLeft = $('apLeft'), apWhere = $('apWhere'), pausedChip = $('pausedChip');
+  try { var sv = parseInt(localStorage.getItem('autoSpeed'), 10); if (sv >= 0 && sv < SPEEDS.length) speedIx = sv; } catch (e) {}
+
+  function pxPerSec() { var h = hts[current] || feed.clientHeight; return h * SPEEDS[speedIx].ppm / 60; }
+  function updateAutoUI() {
+    apPlay.innerHTML = playing
+      ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>'
+      : '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12.5-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5z"/></svg>';
+    apPlay.setAttribute('aria-label', playing ? 'Pause' : 'Play');
+    apSpeed.textContent = SPEEDS[speedIx].name;
+    var dots = apDots.children;
+    for (var k = 0; k < dots.length; k++) dots[k].classList.toggle('on', k <= speedIx);
+    updateTimeLeft();
+  }
+  function updateTimeLeft() {
+    if (!autoOn || !slides.length) return;
+    var ci = chapterIndexAt(current);
+    var endPage = ci >= 0 && chapters.length > 1 ? chapterEnd(ci) : sizes.length;
+    var endY = endPage < offs.length ? offs[endPage] : feed.scrollHeight;
+    var remain = Math.max(0, endY - feed.scrollTop - feed.clientHeight * 0.5);
+    var sec = remain / Math.max(1, pxPerSec());
+    apLeft.textContent = sec < 45 ? 'Less than a minute left' : 'About ' + Math.max(1, Math.round(sec / 60)) + ' min left';
+    var where = ci >= 0 && chapters.length > 1 ? 'in ' + chapters[ci].title : 'in this book';
+    apWhere.textContent = where + ' · page ' + (current + 1) + ' of ' + sizes.length;
+  }
+  function scheduleFade() {
+    clearTimeout(fadeT);
+    autoBar.classList.remove('faded');
+    fadeT = setTimeout(function () { if (playing) autoBar.classList.add('faded'); }, 2600);
+  }
+  function requestWake() {
+    try {
+      if (navigator.wakeLock && !wakeLock) {
+        navigator.wakeLock.request('screen').then(function (l) {
+          wakeLock = l; l.addEventListener('release', function () { wakeLock = null; });
+          if (!playing) releaseWake();
+        }).catch(function () {});
+      }
+    } catch (e) {}
+  }
+  function releaseWake() { try { if (wakeLock) wakeLock.release(); } catch (e) {} wakeLock = null; }
+
+  function tick(t) {
+    if (!playing) return;
+    if (apLast) {
+      var dt = Math.min(0.1, (t - apLast) / 1000);
+      apPos += pxPerSec() * dt;
+      var max = feed.scrollHeight - feed.clientHeight;
+      if (apPos >= max) { feed.scrollTop = max; pause(); return; }
+      feed.scrollTop = apPos;
+    }
+    apLast = t;
+    if (++apFrames % 30 === 0) updateTimeLeft();
+    apRaf = requestAnimationFrame(tick);
+  }
+  function play() {
+    if (!autoOn) return;
+    playing = true; pausedByTouch = false;
+    apPos = feed.scrollTop; apLast = 0;
+    pausedChip.hidden = true;
+    updateAutoUI(); requestWake(); scheduleFade();
+    cancelAnimationFrame(apRaf); apRaf = requestAnimationFrame(tick);
+  }
+  function pause() {
+    playing = false;
+    cancelAnimationFrame(apRaf); releaseWake();
+    clearTimeout(fadeT);
+    if (autoOn) { pausedChip.hidden = false; autoBar.classList.remove('faded'); updateAutoUI(); }
+  }
+  function startAuto() {
+    if (!readMode || !doc || !slides.length) return;
+    autoOn = true;
+    document.body.classList.add('auto-on');
+    autoBar.hidden = false;
+    hint.classList.add('gone'); hideControls();
+    play();
+  }
+  function stopAuto() {
+    if (!autoOn) return;
+    pause();
+    autoOn = false;
+    document.body.classList.remove('auto-on');
+    autoBar.hidden = true; pausedChip.hidden = true;
+  }
+  function setSpeed(d) {
+    speedIx = Math.max(0, Math.min(SPEEDS.length - 1, speedIx + d));
+    try { localStorage.setItem('autoSpeed', String(speedIx)); } catch (e) {}
+    updateAutoUI();
+    if (playing) scheduleFade();
+  }
+  $('autoBtn').addEventListener('click', startAuto);
+  apPlay.addEventListener('click', function () { if (playing) pause(); else play(); });
+  $('apSlower').addEventListener('click', function () { setSpeed(-1); });
+  $('apFaster').addEventListener('click', function () { setSpeed(1); });
+  $('apClose').addEventListener('click', function () { stopAuto(); showControls(); });
+  autoBar.addEventListener('pointerdown', function () { if (playing) scheduleFade(); });
+
+  // touching the page pauses; a tap (not a scroll) toggles
+  feed.addEventListener('touchstart', function () {
+    if (!autoOn) return;
+    pausedByTouch = playing;
+    if (playing) pause();
+  }, { passive: true });
+  feed.addEventListener('wheel', function () { if (autoOn && playing) pause(); }, { passive: true });
+  function onSingleTap() {
+    if (autoOn) {
+      if (pausedByTouch) pausedByTouch = false;
+      else if (playing) pause(); else play();
+      return;
+    }
+    toggleControls();
+  }
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState === 'hidden' && playing) pause();
+  });
+
+  bindTaps(feed, openZoom, onSingleTap);
   bindTaps(zoom, function () { closeZoom(); });
 
   document.addEventListener('keydown', function (e) {
     if (reader.hidden) return;
-    if (e.key === 'Escape') { if (zoomed) closeZoom(); else closeBook(); }
-    if (zoomed) return;
+    if (e.key === 'Escape') {
+      if (!wall.hidden) closeWall(); else if (zoomed) closeZoom(); else if (autoOn) stopAuto(); else closeBook();
+      return;
+    }
+    if (zoomed || !wall.hidden) return;
+    if (autoOn && e.key === ' ') { e.preventDefault(); if (playing) pause(); else play(); return; }
+    if (readMode) {
+      if (e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); feed.scrollBy({ top: feed.clientHeight * 0.8, behavior: 'smooth' }); }
+      if (e.key === 'ArrowUp' || e.key === 'PageUp') { e.preventDefault(); feed.scrollBy({ top: -feed.clientHeight * 0.8, behavior: 'smooth' }); }
+      return;
+    }
     var go = function (d) { var t = slides[current + d]; if (t) t.el.scrollIntoView({ behavior: 'smooth' }); };
     if (e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); go(1); }
     if (e.key === 'ArrowUp' || e.key === 'PageUp') { e.preventDefault(); go(-1); }
   });
 
+  /* rotation / resize: keep the same place in the book */
   var rt = 0;
   window.addEventListener('resize', function () {
+    resizing = true;
     clearTimeout(rt);
     rt = setTimeout(function () {
-      if (!doc || reader.hidden) return;
-      closeZoom();
-      slides.forEach(function (_, i) { release(i); layout(i); });
-      feed.scrollTop = current * feed.clientHeight;
-      updateWindow();
+      var keep = anchor;
+      applyMode();
+      if (doc && !reader.hidden && slides.length) {
+        closeZoom(); endScrub(null, true);
+        slides.forEach(function (_, i) { release(i); layout(i); });
+        measure();
+        goToPage(keep.i, readMode ? keep.f : 0);
+        if (autoOn) apPos = feed.scrollTop;
+      }
+      requestAnimationFrame(function () { resizing = false; });
     }, 150);
   });
+  applyMode(); updateHint();
 
   /* ======================= get the app: Telegram or Home Screen ======================= */
   var homeBtn = $('homeBtn');
