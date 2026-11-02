@@ -125,6 +125,48 @@
       "title": "Software Testing: An ISTQB–ISEB Foundation Guide",
       "author": "Brian Hambling (Editor) · 239 pages",
       "file": "books/Book_foundation_level-1.pdf"
-    }
+    },
+        {
+      "id": "exceptions",
+      "title": "Exceptions",
+      "author": "Pocket guide · 9 pages",
+      "file": "books/Exceptions.pdf"
+    },
+    {
+      "id": "testing",
+      "title": "Testing",
+      "author": "Pocket guide · 23 pages",
+      "file": "books/Testing.pdf"
+    },
+    {
+      "id": "build-systems",
+      "title": "Build Systems",
+      "author": "Pocket guide · 37 pages",
+      "file": "books/Build_Systems.pdf"
+    },
+    {
+      "id": "reflection-jvm",
+      "title": "Reflection (JVM)",
+      "author": "Pocket guide · 45 pages",
+      "file": "books/Reflection_JVM.pdf"
+    },
+    {
+      "id": "jvm-and-kotlin-compiler",
+      "title": "The Java Virtual Machine & the Kotlin Compiler",
+      "author": "Pocket guide · 103 pages",
+      "file": "books/The_JVM_and_the_Kotlin_Compiler.pdf"
+    },
+    {
+      "id": "asynchronous-programming",
+      "title": "Asynchronous Programming in Kotlin",
+      "author": "Pocket guide · 125 pages",
+      "file": "books/Asynchronous_Programming_in_Kotlin.pdf"
+    },
+    {
+      "id": "backend-development",
+      "title": "Backend Development with Kotlin",
+      "author": "Pocket guide · 61 pages",
+      "file": "books/Backend_Development_with_Kotlin.pdf"
+    },
   ]
 }
