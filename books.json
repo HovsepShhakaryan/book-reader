@@ -239,6 +239,24 @@
       "title": "PowerShell Notes for Professionals",
       "author": "GoalKicker.com · 184 pages",
       "file": "books/PowerShellNotesForProfessionals.pdf"
+    },
+    {
+      "id": "objective-c-succinctly",
+      "title": "Objective-C Succinctly",
+      "author": "Ryan Hodson · 112 pages",
+      "file": "books/Objective-C_Succinctly.pdf"
+    },
+    {
+      "id": "visual-basic-net-notes-for-professionals",
+      "title": "Visual Basic .NET Notes for Professionals",
+      "author": "GoalKicker.com · 149 pages",
+      "file": "books/VisualBasic_NETNotesForProfessionals.pdf"
+    },
+    {
+      "id": "entity-framework-notes-for-professionals",
+      "title": "Entity Framework Notes for Professionals",
+      "author": "GoalKicker.com · 94 pages",
+      "file": "books/EntityFrameworkNotesForProfessionals.pdf"
     }
   ]
 }
