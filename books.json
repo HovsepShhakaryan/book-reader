@@ -275,6 +275,24 @@
       "title": "Xamarin.Forms Notes for Professionals",
       "author": "GoalKicker.com · 181 pages",
       "file": "books/XamarinFormsNotesForProfessionals.pdf"
+    },
+    {
+      "id": "bash-notes-for-professionals",
+      "title": "Bash Notes for Professionals",
+      "author": "GoalKicker.com · 204 pages",
+      "file": "books/BashNotesForProfessionals.pdf"
+    },
+    {
+      "id": "algorithms-notes-for-professionals",
+      "title": "Algorithms Notes for Professionals",
+      "author": "GoalKicker.com · 257 pages",
+      "file": "books/AlgorithmsNotesForProfessionals.pdf"
+    },
+    {
+      "id": "dotnet-framework-notes-for-professionals",
+      "title": ".NET Framework Notes for Professionals",
+      "author": "GoalKicker.com · 192 pages",
+      "file": "books/DotNETFrameworkNotesForProfessionals.pdf"
     }
   ]
 }
