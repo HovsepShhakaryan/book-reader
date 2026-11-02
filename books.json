@@ -257,6 +257,24 @@
       "title": "Entity Framework Notes for Professionals",
       "author": "GoalKicker.com · 94 pages",
       "file": "books/EntityFrameworkNotesForProfessionals.pdf"
+    },
+    {
+      "id": "objective-c-notes-for-professionals",
+      "title": "Objective-C Notes for Professionals",
+      "author": "GoalKicker.com · 129 pages",
+      "file": "books/ObjectiveCNotesForProfessionals.pdf"
+    },
+    {
+      "id": "swift-notes-for-professionals",
+      "title": "Swift Notes for Professionals",
+      "author": "GoalKicker.com · 291 pages",
+      "file": "books/SwiftNotesForProfessionals.pdf"
+    },
+    {
+      "id": "xamarin-forms-notes-for-professionals",
+      "title": "Xamarin.Forms Notes for Professionals",
+      "author": "GoalKicker.com · 181 pages",
+      "file": "books/XamarinFormsNotesForProfessionals.pdf"
     }
   ]
 }
