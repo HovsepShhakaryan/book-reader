@@ -167,6 +167,30 @@
       "title": "Backend Development with Kotlin",
       "author": "Pocket guide · 61 pages",
       "file": "books/Backend_Development_with_Kotlin.pdf"
+    },
+    {
+      "id": "objective-c-fundamentals",
+      "title": "Objective-C Fundamentals",
+      "author": "Christopher K. Fairbairn, Johannes Fahrenkrug & Collin Ruffenach · 368 pages",
+      "file": "books/Objective-C_Fundamentals.pdf"
+    },
+    {
+      "id": "programming-in-objective-c",
+      "title": "Programming in Objective-C (6th Edition)",
+      "author": "Stephen G. Kochan · 551 pages",
+      "file": "books/Programming_in_Objective-C.pdf"
+    },
+    {
+      "id": "swift-programming-language",
+      "title": "The Swift Programming Language",
+      "author": "Apple Inc. · 525 pages",
+      "file": "books/SwiftLanguage.pdf"
+    },
+    {
+      "id": "web-design-html-css",
+      "title": "Web Design with HTML and CSS Digital Classroom",
+      "author": "Jeremy Osborne & Jennifer Smith · 307 pages",
+      "file": "books/Web_Design_with_HTML_and_CSS.pdf"
     }
   ]
 }
