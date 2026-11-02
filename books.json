@@ -85,12 +85,6 @@
       "file": "books/Kotlin in action.pdf"
     },
     {
-      "id": "kotlin-v-deistvii",
-      "title": "Kotlin в действии",
-      "author": "Дмитрий Жемеров & Светлана Исакова · 403 pages",
-      "file": "books/Kotlin v dieistvii - Dmitrii Zhiemierov.pdf"
-    },
-    {
       "id": "kotlin-for-android-developers",
       "title": "Kotlin for Android Developers",
       "author": "Antonio Leiva · 191 pages",
