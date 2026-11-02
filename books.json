@@ -169,12 +169,6 @@
       "file": "books/Backend_Development_with_Kotlin.pdf"
     },
     {
-      "id": "objective-c-fundamentals",
-      "title": "Objective-C Fundamentals",
-      "author": "Christopher K. Fairbairn, Johannes Fahrenkrug & Collin Ruffenach · 368 pages",
-      "file": "books/Objective-C Fundamentals - Fairbairn, Fahrenkrug, Ruffenach - Manning (2011).pdf"
-    },
-    {
       "id": "programming-in-objective-c",
       "title": "Programming in Objective-C (6th Edition)",
       "author": "Stephen G. Kochan · 551 pages",
