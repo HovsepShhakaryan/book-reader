@@ -221,6 +221,24 @@
       "title": "Perl Notes for Professionals",
       "author": "GoalKicker.com · 109 pages",
       "file": "books/PerlNotesForProfessionals.pdf"
+    },
+    {
+      "id": "swift-programming-language-5-7",
+      "title": "The Swift Programming Language (Swift 5.7)",
+      "author": "Apple Inc. · 1040 pages",
+      "file": "books/SwiftProgrammingLanguage57.pdf"
+    },
+    {
+      "id": "excel-vba-notes-for-professionals",
+      "title": "Excel VBA Notes for Professionals",
+      "author": "GoalKicker.com · 128 pages",
+      "file": "books/ExcelVBANotesForProfessionals.pdf"
+    },
+    {
+      "id": "powershell-notes-for-professionals",
+      "title": "PowerShell Notes for Professionals",
+      "author": "GoalKicker.com · 184 pages",
+      "file": "books/PowerShellNotesForProfessionals.pdf"
     }
   ]
 }
