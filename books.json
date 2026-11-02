@@ -172,13 +172,13 @@
       "id": "objective-c-fundamentals",
       "title": "Objective-C Fundamentals",
       "author": "Christopher K. Fairbairn, Johannes Fahrenkrug & Collin Ruffenach · 368 pages",
-      "file": "books/Objective-C_Fundamentals.pdf"
+      "file": "books/Objective-C Fundamentals - Fairbairn Fahrenkrug Ruffenach - Manning 2011.pdf"
     },
     {
       "id": "programming-in-objective-c",
       "title": "Programming in Objective-C (6th Edition)",
       "author": "Stephen G. Kochan · 551 pages",
-      "file": "books/Programming_in_Objective-C.pdf"
+      "file": "books/Programming in Objective-C - 6th Edition.pdf"
     },
     {
       "id": "swift-programming-language",
@@ -190,7 +190,7 @@
       "id": "web-design-html-css",
       "title": "Web Design with HTML and CSS Digital Classroom",
       "author": "Jeremy Osborne & Jennifer Smith · 307 pages",
-      "file": "books/Web_Design_with_HTML_and_CSS.pdf"
+      "file": "books/web-design-with-html-and-css-digital-classroom.pdf"
     }
   ]
 }
