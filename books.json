@@ -126,7 +126,7 @@
       "author": "Brian Hambling (Editor) · 239 pages",
       "file": "books/Book_foundation_level-1.pdf"
     },
-        {
+    {
       "id": "exceptions",
       "title": "Exceptions",
       "author": "Pocket guide · 9 pages",
@@ -167,6 +167,6 @@
       "title": "Backend Development with Kotlin",
       "author": "Pocket guide · 61 pages",
       "file": "books/Backend_Development_with_Kotlin.pdf"
-    },
+    }
   ]
 }
