@@ -185,6 +185,24 @@
       "title": "Web Design with HTML and CSS Digital Classroom",
       "author": "Jeremy Osborne & Jennifer Smith · 307 pages",
       "file": "books/web-design-with-html-and-css-digital-classroom.pdf"
+    },
+    {
+      "id": "html5-notes-for-professionals",
+      "title": "HTML5 Notes for Professionals",
+      "author": "GoalKicker.com · 124 pages",
+      "file": "books/HTML5NotesForProfessionals.pdf"
+    },
+    {
+      "id": "css-notes-for-professionals",
+      "title": "CSS Notes for Professionals",
+      "author": "GoalKicker.com · 244 pages",
+      "file": "books/CSSNotesForProfessionals.pdf"
+    },
+    {
+      "id": "html5-canvas-notes-for-professionals",
+      "title": "HTML5 Canvas Notes for Professionals",
+      "author": "GoalKicker.com · 180 pages",
+      "file": "books/HTML5CanvasNotesForProfessionals.pdf"
     }
   ]
 }
