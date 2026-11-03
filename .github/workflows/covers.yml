@@ -1,0 +1,101 @@
+# Swipe Book: makes a cover picture for every book automatically.
+# Runs whenever you upload a book or change books.json, and can be started by hand
+# from the Actions tab ("Make book covers" -> "Run workflow").
+# It saves covers/<book id>.jpg plus covers/covers.json, which the app reads.
+
+name: Make book covers
+
+on:
+  push:
+    branches: [main]
+    paths: ['books/**', 'books.json']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+
+concurrency:
+  group: covers
+  cancel-in-progress: false
+
+jobs:
+  covers:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install the PDF renderer
+        run: pip install pypdfium2==4.30.0 pillow==10.4.0
+
+      - name: Make covers
+        run: |
+          python - <<'PY'
+          import hashlib, json, os, sys
+          import pypdfium2 as pdfium
+
+          WIDTH = 480        # cover width in pixels
+          QUALITY = 80       # JPEG quality
+
+          books = json.load(open("books.json", encoding="utf-8")).get("books", [])
+          os.makedirs("covers", exist_ok=True)
+          index_path = "covers/covers.json"
+          old = json.load(open(index_path, encoding="utf-8")) if os.path.exists(index_path) else {}
+          new = {}
+
+          for b in books:
+              bid, path = b.get("id"), b.get("file")
+              if not bid or not path or b.get("cover"):
+                  continue
+              if not os.path.exists(path):
+                  print(f"::warning::{bid}: file not found: {path}")
+                  continue
+              with open(path, "rb") as f:
+                  digest = hashlib.sha1(f.read()).hexdigest()[:10]
+              out = f"covers/{bid}.jpg"
+              if old.get(bid) == digest and os.path.exists(out):
+                  new[bid] = digest
+                  continue
+              try:
+                  pdf = pdfium.PdfDocument(path)
+                  page = pdf[0]
+                  scale = WIDTH / page.get_width()
+                  img = page.render(scale=scale).to_pil().convert("RGB")
+                  img.save(out, "JPEG", quality=QUALITY, optimize=True, progressive=True)
+                  pdf.close()
+                  new[bid] = digest
+                  print(f"made cover: {out}")
+              except Exception as e:
+                  print(f"::warning::{bid}: could not make a cover ({e})")
+
+          # remove covers of books that are no longer in books.json
+          for name in os.listdir("covers"):
+              if name.endswith(".jpg") and name[:-4] not in new:
+                  os.remove(os.path.join("covers", name))
+                  print(f"removed old cover: {name}")
+
+          with open(index_path, "w", encoding="utf-8") as f:
+              json.dump(new, f, indent=2, ensure_ascii=False)
+              f.write("\n")
+          print(f"{len(new)} covers ready")
+          PY
+
+      - name: Save covers to the repository
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add covers
+          if git diff --cached --quiet; then
+            echo "Covers are already up to date."
+          else
+            git commit -m "Update book covers"
+            git push
+            # ask GitHub Pages to publish the new covers
+            gh api --method POST "repos/${{ github.repository }}/pages/builds" || true
+          fi
+        env:
+          GH_TOKEN: ${{ github.token }}
