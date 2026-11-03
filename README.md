@@ -28,3 +28,9 @@ The `id` may only use English letters, numbers, `-` and `_` (max 64 characters).
 - **Landscape:** reading mode. Pages fill the width and scroll smoothly. Tap **Auto-scroll** to read hands-free (5 speeds, tap the page to pause).
 - **Find a page:** pinch two fingers together (or tap the grid button) to see every page grouped by chapter. Or hold the right edge and slide to preview pages, then let go to jump.
 - Chapters come from the PDF's own bookmarks.
+
+## Book covers
+
+Covers are made automatically by `.github/workflows/covers.yml` every time you upload a book or change `books.json`.
+They are saved in the `covers` folder. To make them by hand: Actions → Make book covers → Run workflow.
+To use your own picture for a book, add `"cover": "covers/my-picture.jpg"` to that book in `books.json`.
