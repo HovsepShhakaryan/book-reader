@@ -455,6 +455,30 @@
       "title": "Think Stats 2: Exploratory Data Analysis in Python",
       "author": "Allen B. Downey · 264 pages",
       "file": "books/thinkstats2.pdf"
+    },
+    {
+      "id": "secure-programming-howto",
+      "title": "Secure Programming HOWTO",
+      "author": "David A. Wheeler · 194 pages",
+      "file": "books/Secure-Programs-HOWTO.pdf"
+    },
+    {
+      "id": "ruby-notes-for-professionals",
+      "title": "Ruby Notes for Professionals",
+      "author": "GoalKicker.com · 235 pages",
+      "file": "books/RubyNotesForProfessionals.pdf"
+    },
+    {
+      "id": "ruby-on-rails-notes-for-professionals",
+      "title": "Ruby on Rails Notes for Professionals",
+      "author": "GoalKicker.com · 231 pages",
+      "file": "books/RubyOnRailsNotesForProfessionals.pdf"
+    },
+    {
+      "id": "ruby-programming",
+      "title": "Ruby Programming",
+      "author": "Wikibooks.org · 261 pages",
+      "file": "books/Ruby_Programming.pdf"
     }
   ]
 }
