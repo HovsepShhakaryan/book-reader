@@ -81,6 +81,7 @@ body {
   background: #fff; opacity: 0; transition: opacity .3s ease;
 }
 .cover img.on { opacity: 1; }
+.cover img.instant { transition: none; }   /* covers that are already saved appear at once, no fade */
 .cover::after {           /* spine shading over the page image */
   content: ""; position: absolute; inset: 0 auto 0 0; width: 7px;
   background: linear-gradient(90deg, rgba(0,0,0,.28), rgba(0,0,0,0));
@@ -660,13 +661,46 @@ body.calm #rail { opacity: .35; }
       .then(function (j) { books = (j && j.books) || []; return books; });
   }
 
-  /* ---- covers: the first page of each PDF, cached on the device ---- */
-  var thumbQueue = [], thumbBusy = false, thumbWorker = null;
-  function thumbKey(b) { return 'thumb_v1_' + b.id + '_' + b.file; }
-  function setCover(img, src) {
-    img.onload = function () { img.classList.add('on'); };
+  /* ---- covers ----
+     1. a ready-made picture from GitHub: covers/<id>.jpg (made automatically, see .github/workflows/covers.yml)
+     2. else a picture this phone made earlier and saved
+     3. else this phone draws page 1 once and saves it */
+  var coverMap = {};                          // id -> version, from covers/covers.json
+  var COVER_CACHE = 'swipebook-covers-v1';
+  function fetchCoverMap() {
+    return fetch('covers/covers.json?t=' + Date.now(), { cache: 'no-store' })
+      .then(function (r) { return r.ok ? r.json() : (r.status === 404 ? {} : null); })
+      .then(function (j) { if (j) coverMap = j; })      // offline: keep the covers we knew
+      .catch(function () {});
+  }
+  function coverKey(b) { return 'covers-device/' + encodeURIComponent(b.id) + '?f=' + encodeURIComponent(b.file); }
+  function setCover(img, src, instant) {
+    var t0 = Date.now();
+    img.onload = function () {
+      if (instant || Date.now() - t0 < 150) img.classList.add('instant');   // came from memory: no fade
+      img.classList.add('on');
+    };
     img.src = src;
   }
+  // saved on this phone (Cache Storage keeps far more than localStorage and survives better)
+  function getSavedCover(b) {
+    var legacy = null;
+    try { legacy = localStorage.getItem('thumb_v1_' + b.id + '_' + b.file); } catch (e) {}
+    if (legacy) return Promise.resolve(legacy);
+    if (!window.caches) return Promise.resolve(null);
+    return caches.open(COVER_CACHE).then(function (c) { return c.match(coverKey(b)); })
+      .then(function (res) { return res ? res.blob() : null; })
+      .then(function (bl) { return bl ? URL.createObjectURL(bl) : null; })
+      .catch(function () { return null; });
+  }
+  function saveCover(b, blob) {
+    if (!window.caches || !blob) return;
+    caches.open(COVER_CACHE).then(function (c) {
+      return c.put(coverKey(b), new Response(blob, { headers: { 'Content-Type': 'image/jpeg' } }));
+    }).catch(function () {});
+  }
+
+  var thumbQueue = [], thumbBusy = false, thumbWorker = null;
   function queueThumb(b, img) { thumbQueue.push({ b: b, img: img }); nextThumb(); }
   function nextThumb() {
     if (thumbBusy || !thumbQueue.length || !reader.hidden) return;   // pause while a book is open
@@ -688,10 +722,13 @@ body.calm #rail { opacity: .35; }
       var ctx = c.getContext('2d');
       ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.width, c.height);
       return page.render({ canvasContext: ctx, viewport: vp }).promise.then(function () {
-        var url = c.toDataURL('image/jpeg', 0.8);
-        c.width = 0; c.height = 0;
-        setCover(job.img, url);
-        try { localStorage.setItem(thumbKey(b), url); } catch (e) {}
+        return new Promise(function (res) {
+          c.toBlob(function (bl) {
+            c.width = 0; c.height = 0;
+            if (bl) { setCover(job.img, URL.createObjectURL(bl)); saveCover(b, bl); }
+            res();
+          }, 'image/jpeg', 0.8);
+        });
       });
     }).catch(function () { /* keep the colored placeholder */ })
       .then(function () {
@@ -708,6 +745,14 @@ body.calm #rail { opacity: .35; }
       queueThumb(b, img);
     });
   }, { rootMargin: '300px 0px' }) : null;
+
+  function deviceCover(b, img, cover) {
+    getSavedCover(b).then(function (url) {
+      if (url) setCover(img, url, true);
+      else if (coverObserver) coverObserver.observe(cover);
+      else queueThumb(b, img);
+    });
+  }
 
   function renderLibrary() {
     list.innerHTML = '';
@@ -733,13 +778,13 @@ body.calm #rail { opacity: .35; }
       btn._text = norm((b.title || '') + ' ' + (b.author || '') + ' ' + b.id);
       list.appendChild(btn);
 
-      // cover image: custom "cover" from books.json, else cached first page, else render it
-      var cached = null;
-      try { cached = localStorage.getItem(thumbKey(b)); } catch (e) {}
+      // cover: "cover" from books.json, else the ready-made one from GitHub, else this phone's own
       if (b.cover) setCover(img, b.cover);
-      else if (cached) setCover(img, cached);
-      else if (coverObserver) coverObserver.observe(cover);
-      else queueThumb(b, img);
+      else if (coverMap[b.id]) {
+        img.onerror = (function (bk, im, cv) { return function () { im.onerror = null; deviceCover(bk, im, cv); }; })(b, img, cover);
+        setCover(img, 'covers/' + encodeURIComponent(b.id) + '.jpg?v=' + encodeURIComponent(coverMap[b.id]));
+      }
+      else deviceCover(b, img, cover);
     });
     applySearch();
   }
@@ -818,15 +863,28 @@ body.calm #rail { opacity: .35; }
 
   function isReadMode() { return window.innerWidth > window.innerHeight * 1.05; }
 
+  var area = null;                      // space for one page, measured once (not per page: big books)
+  function measureArea() {
+    var s = slides[0].el, cs = getComputedStyle(s);
+    area = {
+      aw: s.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight),
+      ah: s.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom)
+    };
+  }
+  function layoutAll() {
+    if (!slides.length) return;
+    measureArea();
+    for (var i = 0; i < slides.length; i++) layout(i);
+    measure();
+  }
   function fitBox(i) {
-    var s = slides[i].el, cs = getComputedStyle(s);
-    var aw = s.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+    if (!area) measureArea();
+    var aw = area.aw;
     if (readMode) {
       var kw = Math.min(aw, READ_MAX_W) / sizes[i].w;
       return { w: Math.floor(sizes[i].w * kw), h: Math.floor(sizes[i].h * kw), k: kw };
     }
-    var ah = s.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
-    var k = Math.min(aw / sizes[i].w, ah / sizes[i].h);
+    var k = Math.min(aw / sizes[i].w, area.ah / sizes[i].h);
     return { w: Math.floor(sizes[i].w * k), h: Math.floor(sizes[i].h * k), k: k };
   }
   function layout(i) {
@@ -853,8 +911,18 @@ body.calm #rail { opacity: .35; }
     var my = token;
     doc.getPage(i + 1).then(function (page) {
       if (my !== token) return;
-      var b = layout(i);
       var v1 = page.getViewport({ scale: 1 });
+      if (Math.abs(v1.width - sizes[i].w) > 0.5 || Math.abs(v1.height - sizes[i].h) > 0.5) {
+        var oldH = sl.el.offsetHeight;
+        sizes[i] = { w: v1.width, h: v1.height };
+        layout(i);
+        if (readMode) {
+          var dh = sl.el.offsetHeight - oldH;
+          if (dh && i < current) feed.scrollTop += dh;   // keep the text you are reading in place
+          measure();
+        }
+      }
+      var b = layout(i);
       var scale = b.k * (readMode ? Math.min(dpr(), 2) : dpr());
       if (v1.width * v1.height * scale * scale > MAX_PIXELS) scale = Math.sqrt(MAX_PIXELS / (v1.width * v1.height));
       var vp = page.getViewport({ scale: scale });
@@ -959,7 +1027,7 @@ body.calm #rail { opacity: .35; }
     bookName.textContent = b.title || b.id;
     chapName.hidden = true;
     backBtn.hidden = inTelegram;   // inside Telegram the native Back button is used
-    feed.innerHTML = ''; slides = []; sizes = []; offs = []; hts = []; totEl.textContent = '–'; curEl.textContent = '1';
+    feed.innerHTML = ''; slides = []; sizes = []; offs = []; hts = []; area = null; totEl.textContent = '–'; curEl.textContent = '1';
     loading.hidden = false; loadText.textContent = 'Opening book…'; loadFill.style.width = '0';
     hint.classList.remove('gone');
     showControls();
@@ -974,14 +1042,13 @@ body.calm #rail { opacity: .35; }
       if (doc) doc.destroy();
       doc = res[0];
       var startPage = Math.min(Math.max(1, res[1]), doc.numPages);
-      var jobs = [];
-      for (var p = 1; p <= doc.numPages; p++) jobs.push(doc.getPage(p).then(function (pg) {
-        var v = pg.getViewport({ scale: 1 }); return { w: v.width, h: v.height };
-      }));
       loadChapters(doc).then(function (ch) { if (my === token) { chapters = ch; updateCounter(); } });
-      return Promise.all(jobs).then(function (sz) {
+      // big books open instantly: every page starts with page 1's size and is corrected when it is drawn
+      return doc.getPage(1).then(function (pg1) {
         if (my !== token) return;
-        sizes = sz;
+        var v = pg1.getViewport({ scale: 1 });
+        sizes = [];
+        for (var p = 0; p < doc.numPages; p++) sizes.push({ w: v.width, h: v.height });
         var frag = document.createDocumentFragment();
         sizes.forEach(function (_, i) {
           var el = document.createElement('div'); el.className = 'slide';
@@ -991,8 +1058,7 @@ body.calm #rail { opacity: .35; }
           slides.push({ el: el, page: page, ph: ph, rendered: false, busy: false });
         });
         feed.appendChild(frag);
-        slides.forEach(function (_, i) { layout(i); });
-        measure();
+        layoutAll();
         totEl.textContent = doc.numPages;
         goToPage(startPage - 1, 0);
         if (current > 0) hint.classList.add('gone');
@@ -1520,8 +1586,8 @@ body.calm #rail { opacity: .35; }
       applyMode();
       if (doc && !reader.hidden && slides.length) {
         closeZoom(); endScrub(null, true);
-        slides.forEach(function (_, i) { release(i); layout(i); });
-        measure();
+        slides.forEach(function (_, i) { release(i); });
+        layoutAll();
         goToPage(keep.i, readMode ? keep.f : 0);
         if (autoOn) apPos = feed.scrollTop;
       }
@@ -1684,14 +1750,31 @@ body.calm #rail { opacity: .35; }
   try { wanted = (tg && tg.initDataUnsafe && tg.initDataUnsafe.start_param) || ''; } catch (e) {}
   if (!wanted) { try { wanted = new URLSearchParams(location.search).get('book') || new URLSearchParams(location.search).get('tgWebAppStartParam') || ''; } catch (e) {} }
 
-  fetchBooks().then(function () {
-    renderLibrary();
-    if (wanted) {
-      var b = books.filter(function (x) { return x.id === wanted; })[0];
-      if (b) openBook(b, false);
-      else showToast('The book "' + wanted + '" is not in books.json. Showing the library instead.');
+  // Show the library saved last time right away, then check GitHub for changes.
+  var savedSig = null, openedWanted = false;
+  try {
+    savedSig = localStorage.getItem('sb_library');
+    var saved = savedSig && JSON.parse(savedSig);
+    if (saved && saved.books && saved.books.length) { books = saved.books; coverMap = saved.covers || {}; }
+    else savedSig = null;
+  } catch (e) { savedSig = null; }
+  function openWanted(final) {
+    if (!wanted || openedWanted) return;
+    var b = books.filter(function (x) { return x.id === wanted; })[0];
+    if (b) { openedWanted = true; openBook(b, false); }
+    else if (final) showToast('The book "' + wanted + '" is not in books.json. Showing the library instead.');
+  }
+  if (savedSig) { renderLibrary(); openWanted(false); }
+
+  Promise.all([fetchBooks(), fetchCoverMap()]).then(function () {
+    var sig = JSON.stringify({ books: books, covers: coverMap });
+    if (sig !== savedSig) {
+      renderLibrary();
+      try { localStorage.setItem('sb_library', sig); } catch (e) {}
     }
+    openWanted(true);
   }).catch(function () {
+    if (savedSig) return;   // offline: keep showing the saved library
     libSub.textContent = 'Could not load books.json. Check that the file is uploaded and has no typing mistakes (commas, quotes).';
   });
 })();
