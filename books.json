@@ -311,6 +311,24 @@
       "title": "LaTeX Notes for Professionals",
       "author": "GoalKicker.com · 60 pages",
       "file": "books/LaTeXNotesForProfessionals.pdf"
+    },
+    {
+      "id": "haskell-notes-for-professionals",
+      "title": "Haskell Notes for Professionals",
+      "author": "GoalKicker.com · 230 pages",
+      "file": "books/HaskellNotesForProfessionals.pdf"
+    },
+    {
+      "id": "r-notes-for-professionals",
+      "title": "R Notes for Professionals",
+      "author": "GoalKicker.com · 475 pages",
+      "file": "books/RNotesForProfessionals.pdf"
+    },
+    {
+      "id": "hibernate-notes-for-professionals",
+      "title": "Hibernate Notes for Professionals",
+      "author": "GoalKicker.com · 39 pages",
+      "file": "books/HibernateNotesForProfessionals.pdf"
     }
   ]
 }
