@@ -1034,6 +1034,40 @@ body.calm #rail { opacity: .35; }
     return true;
   }
 
+  /* ======================= phone Back (Android back gesture/button, iPhone edge swipe) =======================
+     Each open screen (book, page wall, zoom, "Get app" sheet) is a layer. While any layer is open, the
+     browser history holds one extra step, so the phone's Back closes the top layer instead of leaving the app.
+     Inside Telegram, Telegram's own Back button does this instead. */
+  var layers = [], ignorePop = 0, inPop = false;
+  var useHistory = !inTelegram && !!(window.history && history.pushState);
+  function pushLayer(name) {
+    if (layers.indexOf(name) >= 0) return;
+    layers.push(name);
+    if (useHistory && layers.length === 1) { try { history.pushState({ swipebook: 1 }, ''); } catch (e) {} }
+  }
+  function dropLayer(name) {
+    var i = layers.indexOf(name);
+    if (i < 0) return;
+    layers.splice(i, 1);
+    // closed with an on-screen button: remove the extra history step too
+    if (useHistory && !layers.length && !inPop) { ignorePop++; try { history.back(); } catch (e) { ignorePop--; } }
+  }
+  function closeTopLayer() {
+    var top = layers[layers.length - 1];
+    if (top === 'sheet') closeSheet();
+    else if (top === 'wall') closeWall();
+    else if (top === 'zoom') closeZoom();
+    else if (top === 'book') closeBook();
+    else layers.pop();
+  }
+  window.addEventListener('popstate', function () {
+    if (ignorePop > 0) { ignorePop--; return; }
+    if (!layers.length) return;
+    inPop = true;
+    try { closeTopLayer(); } finally { inPop = false; }
+    if (useHistory && layers.length) { try { history.pushState({ swipebook: 1 }, ''); } catch (e) {} }   // more to close: keep one step
+  });
+
   /* ======================= open / close a book ======================= */
   function openBook(b, fromLibrary) {
     var my = ++token;
@@ -1041,6 +1075,7 @@ body.calm #rail { opacity: .35; }
     closeZoom(); closeWall(); stopAuto(); resetThumbs(); chapters = []; wallFor = -1;
     applyMode(); updateHint();
     library.hidden = true; reader.hidden = false;
+    pushLayer('book');
     bookName.textContent = b.title || b.id;
     chapName.hidden = true;
     backBtn.hidden = inTelegram;   // inside Telegram the native Back button is used
@@ -1096,6 +1131,7 @@ body.calm #rail { opacity: .35; }
     feedInner.innerHTML = ''; feedInner.style.transform = ''; slides = []; offs = []; hts = [];
     reader.hidden = true; library.hidden = false;
     document.body.classList.remove('calm');
+    dropLayer('book');
     if (inTelegram) { try { tg.BackButton.hide(); } catch (e) {} }
     if (!books.length) fetchBooks().then(renderLibrary).catch(function () {});
     setTimeout(nextThumb, 300);
@@ -1246,6 +1282,7 @@ body.calm #rail { opacity: .35; }
     zoomInner.innerHTML = ''; zoomInner.appendChild(c);
     zs = { idx: idx, w1: r.width, h1: r.height, scale: scale, canvas: c };
     zoom.classList.add('on'); zoomTag.hidden = false;
+    pushLayer('zoom');
     zoomLayout(scale, fx, fy, x, y);
     var my = token;
     doc.getPage(idx + 1).then(function (page) {
@@ -1320,6 +1357,7 @@ body.calm #rail { opacity: .35; }
     if (!zoomed) return;
     zoomed = false; zs = null;
     zoom.classList.remove('on'); zoomTag.hidden = true;
+    dropLayer('zoom');
     setTimeout(function () {
       if (zoomed) return;
       var c = zoomInner.querySelector('canvas'); if (c) { c.width = 0; c.height = 0; }
@@ -1436,10 +1474,11 @@ body.calm #rail { opacity: .35; }
     if (autoOn) pause();
     buildWall(); markWall();
     wall.hidden = false; wallHint.hidden = false;
+    pushLayer('wall');
     var cur = wallBody.querySelector('.wpg.cur');
     if (cur) wall.scrollTop = Math.max(0, cur.offsetTop - wall.clientHeight / 2 + cur.offsetHeight / 2);
   }
-  function closeWall() { wall.hidden = true; wallHint.hidden = true; }
+  function closeWall() { wall.hidden = true; wallHint.hidden = true; dropLayer('wall'); }
   wallBody.addEventListener('click', function (e) {
     var bt = e.target.closest('.wpg');
     if (!bt) return;
@@ -1738,7 +1777,7 @@ body.calm #rail { opacity: .35; }
 
   var sheetBack = $('sheetBack'), sheetBody = $('sheetBody'), sheetLead = $('sheetLead');
   var sheetTitle = $('sheetTitle'), sheetRow = $('sheetRow');
-  function closeSheet() { sheetBack.hidden = true; }
+  function closeSheet() { sheetBack.hidden = true; dropLayer('sheet'); }
   sheetBack.addEventListener('click', function (e) { if (e.target === sheetBack) closeSheet(); });
 
   var ICON_SHARE = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffb300" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 8l5-5 5 5"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg>';
@@ -1797,6 +1836,7 @@ body.calm #rail { opacity: .35; }
     if (optTg && inTelegram) optTg.addEventListener('click', function () { closeSheet(); try { tg.addToHomeScreen(); } catch (e) {} });
     $('optHome').addEventListener('click', chooseHomeScreen);
     sheetBack.hidden = false;
+    pushLayer('sheet');
   }
 
   /* screen 2: Add to Home Screen as a separate app */
