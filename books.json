@@ -419,6 +419,24 @@
       "title": "Python Tips",
       "author": "Muhammad Yasoob Ullah Khalid · 75 pages",
       "file": "books/book-pythontips-com-en-latest.pdf"
+    },
+    {
+      "id": "kivy-documentation",
+      "title": "Kivy Documentation (Release 2.2.0)",
+      "author": "The Kivy Developers · 875 pages",
+      "file": "books/kivy-readthedocs-io-en-master.pdf"
+    },
+    {
+      "id": "django-documentation",
+      "title": "Django Documentation",
+      "author": "Django Software Foundation · 3102 pages",
+      "file": "books/django-readthedocs-io-en-latest.pdf"
+    },
+    {
+      "id": "making-games-with-python-pygame",
+      "title": "Making Games with Python & Pygame",
+      "author": "Al Sweigart · 365 pages",
+      "file": "books/makinggames.pdf"
     }
   ]
 }
