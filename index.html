@@ -206,6 +206,8 @@ body {
   touch-action: pan-y;
 }
 #feed::-webkit-scrollbar { display: none; width: 0; height: 0; }
+#feedInner { display: contents; }            /* portrait: pages are full-screen slides of the feed */
+body.mode-read #feedInner { display: block; } /* reading mode: a block that auto-scroll glides */
 .slide {
   height: 100%;
   scroll-snap-align: start;
@@ -468,7 +470,7 @@ body.calm #rail { opacity: .35; }
 </main>
 
 <section id="reader" hidden>
-  <div id="feed" aria-label="Book pages"></div>
+  <div id="feed" aria-label="Book pages"><div id="feedInner"></div></div>
   <header id="bar">
     <button id="backBtn" type="button" aria-label="Back to library" hidden>
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
@@ -635,7 +637,7 @@ body.calm #rail { opacity: .35; }
   /* ======================= elements ======================= */
   function $(id) { return document.getElementById(id); }
   var library = $('library'), list = $('list'), libSub = $('libSub');
-  var reader = $('reader'), feed = $('feed'), bookName = $('bookName');
+  var reader = $('reader'), feed = $('feed'), feedInner = $('feedInner'), bookName = $('bookName');
   var curEl = $('cur'), totEl = $('tot'), railFill = $('railFill'), hint = $('hint');
   var loading = $('loading'), loadText = $('loadText'), loadFill = $('loadFill');
   var zoom = $('zoom'), zoomInner = $('zoomInner'), zoomTag = $('zoomTag');
@@ -895,7 +897,13 @@ body.calm #rail { opacity: .35; }
   }
   function measure() {
     offs = []; hts = [];
-    for (var i = 0; i < slides.length; i++) { offs.push(slides[i].el.offsetTop); hts.push(slides[i].el.offsetHeight); }
+    if (!slides.length) return;
+    // positions inside the scrolling area (also correct while auto-scroll is gliding)
+    var base = feed.getBoundingClientRect().top - feed.scrollTop - (playing ? apPos - apBase : 0);
+    for (var i = 0; i < slides.length; i++) {
+      offs.push(slides[i].el.getBoundingClientRect().top - base);
+      hts.push(slides[i].el.offsetHeight);
+    }
   }
   function pageAtY(y) {
     var lo = 0, hi = offs.length - 1;
@@ -918,7 +926,10 @@ body.calm #rail { opacity: .35; }
         layout(i);
         if (readMode) {
           var dh = sl.el.offsetHeight - oldH;
-          if (dh && i < current) feed.scrollTop += dh;   // keep the text you are reading in place
+          if (dh && i < current) {                      // keep the text you are reading in place
+            feed.scrollTop += dh;
+            if (playing) { apBase += dh; apPos += dh; apMax += dh; }
+          }
           measure();
         }
       }
@@ -945,7 +956,7 @@ body.calm #rail { opacity: .35; }
   }
   function updateWindow() {
     for (var i = 0; i < slides.length; i++) {
-      var keep = readMode ? (i >= current - 1 && i <= current + 2) : Math.abs(i - current) <= 2;
+      var keep = readMode ? (i >= current - 1 && i <= current + (autoOn ? 3 : 2)) : Math.abs(i - current) <= 2;
       if (keep) render(i); else release(i);
     }
   }
@@ -1027,7 +1038,7 @@ body.calm #rail { opacity: .35; }
     bookName.textContent = b.title || b.id;
     chapName.hidden = true;
     backBtn.hidden = inTelegram;   // inside Telegram the native Back button is used
-    feed.innerHTML = ''; slides = []; sizes = []; offs = []; hts = []; area = null; totEl.textContent = '–'; curEl.textContent = '1';
+    feedInner.innerHTML = ''; feedInner.style.transform = ''; slides = []; sizes = []; offs = []; hts = []; area = null; totEl.textContent = '–'; curEl.textContent = '1';
     loading.hidden = false; loadText.textContent = 'Opening book…'; loadFill.style.width = '0';
     hint.classList.remove('gone');
     showControls();
@@ -1057,7 +1068,7 @@ body.calm #rail { opacity: .35; }
           page.appendChild(ph); el.appendChild(page); frag.appendChild(el);
           slides.push({ el: el, page: page, ph: ph, rendered: false, busy: false });
         });
-        feed.appendChild(frag);
+        feedInner.appendChild(frag);
         layoutAll();
         totEl.textContent = doc.numPages;
         goToPage(startPage - 1, 0);
@@ -1076,7 +1087,7 @@ body.calm #rail { opacity: .35; }
     closeZoom(); closeWall(); stopAuto(); endScrub(null, true);
     if (doc) { doc.destroy(); doc = null; }
     resetThumbs(); chapters = []; wallFor = -1;
-    feed.innerHTML = ''; slides = []; offs = []; hts = [];
+    feedInner.innerHTML = ''; feedInner.style.transform = ''; slides = []; offs = []; hts = [];
     reader.hidden = true; library.hidden = false;
     document.body.classList.remove('calm');
     if (inTelegram) { try { tg.BackButton.hide(); } catch (e) {} }
@@ -1098,9 +1109,11 @@ body.calm #rail { opacity: .35; }
   var raf = 0, saveTimer = 0;
   function onScroll() {
     if (resizing || !slides.length) return;
+    trackPosition(feed.scrollTop);
+  }
+  function trackPosition(top) {
     var i;
     if (readMode) {
-      var top = feed.scrollTop;
       var ti = pageAtY(top);
       anchor = { i: ti, f: Math.max(0, Math.min(1, (top - offs[ti]) / Math.max(1, hts[ti]))) };
       i = pageAtY(top + feed.clientHeight * 0.35);
@@ -1437,6 +1450,7 @@ body.calm #rail { opacity: .35; }
     { name: 'Fast', ppm: 1.3 }, { name: 'Very fast', ppm: 2.5 }
   ];                                     // ppm = pages per minute
   var autoOn = false, playing = false, speedIx = 2, apRaf = 0, apLast = 0, apPos = 0, apFrames = 0;
+  var apBase = 0, apMax = 0, apStart = 0;
   var wakeLock = null, fadeT = 0, pausedByTouch = false;
   var autoBar = $('autoBar'), apPlay = $('apPlay'), apSpeed = $('apSpeed'), apDots = $('apDots');
   var apLeft = $('apLeft'), apWhere = $('apWhere'), pausedChip = $('pausedChip');
@@ -1458,7 +1472,7 @@ body.calm #rail { opacity: .35; }
     var ci = chapterIndexAt(current);
     var endPage = ci >= 0 && chapters.length > 1 ? chapterEnd(ci) : sizes.length;
     var endY = endPage < offs.length ? offs[endPage] : feed.scrollHeight;
-    var remain = Math.max(0, endY - feed.scrollTop - feed.clientHeight * 0.5);
+    var remain = Math.max(0, endY - (playing ? apPos : feed.scrollTop) - feed.clientHeight * 0.5);
     var sec = remain / Math.max(1, pxPerSec());
     apLeft.textContent = sec < 45 ? 'Less than a minute left' : 'About ' + Math.max(1, Math.round(sec / 60)) + ' min left';
     var where = ci >= 0 && chapters.length > 1 ? 'in ' + chapters[ci].title : 'in this book';
@@ -1481,30 +1495,50 @@ body.calm #rail { opacity: .35; }
   }
   function releaseWake() { try { if (wakeLock) wakeLock.release(); } catch (e) {} wakeLock = null; }
 
+  // The text glides with a GPU transform (sub-pixel smooth). The real scroll position is
+  // only updated when gliding stops, so there is no pixel-by-pixel stepping or iPhone jitter.
+  function setShift() {
+    feedInner.style.transform = 'translate3d(0,' + (apBase - apPos).toFixed(2) + 'px,0)';
+  }
+  function commitShift() {
+    if (!feedInner.style.transform) return;
+    var target = Math.round(apPos);
+    feedInner.style.transform = '';
+    feed.scrollTop = target;
+    apBase = apPos = target;
+  }
   function tick(t) {
     if (!playing) return;
+    if (!apStart) apStart = t;
     if (apLast) {
-      var dt = Math.min(0.1, (t - apLast) / 1000);
-      apPos += pxPerSec() * dt;
-      var max = feed.scrollHeight - feed.clientHeight;
-      if (apPos >= max) { feed.scrollTop = max; pause(); return; }
-      feed.scrollTop = apPos;
+      var dt = Math.min(0.05, (t - apLast) / 1000);
+      var r = Math.min(1, (t - apStart) / 800);          // soft start over 0.8 s
+      r = r * r * (3 - 2 * r);
+      apPos += pxPerSec() * dt * r;
+      if (apPos >= apMax) { apPos = apMax; setShift(); pause(); return; }
+      setShift();
+      apFrames++;
+      if (apFrames % 6 === 0) trackPosition(apPos);
+      if (apFrames % 30 === 0) updateTimeLeft();
     }
     apLast = t;
-    if (++apFrames % 30 === 0) updateTimeLeft();
     apRaf = requestAnimationFrame(tick);
   }
   function play() {
     if (!autoOn) return;
     playing = true; pausedByTouch = false;
-    apPos = feed.scrollTop; apLast = 0;
+    apBase = apPos = feed.scrollTop;
+    apMax = Math.max(apBase, feed.scrollHeight - feed.clientHeight);
+    apLast = 0; apStart = 0;
     pausedChip.hidden = true;
     updateAutoUI(); requestWake(); scheduleFade();
     cancelAnimationFrame(apRaf); apRaf = requestAnimationFrame(tick);
   }
   function pause() {
+    var was = playing;
     playing = false;
     cancelAnimationFrame(apRaf); releaseWake();
+    if (was) commitShift();
     clearTimeout(fadeT);
     if (autoOn) { pausedChip.hidden = false; autoBar.classList.remove('faded'); updateAutoUI(); }
   }
@@ -1579,6 +1613,7 @@ body.calm #rail { opacity: .35; }
   /* rotation / resize: keep the same place in the book */
   var rt = 0;
   window.addEventListener('resize', function () {
+    if (playing) pause();
     resizing = true;
     clearTimeout(rt);
     rt = setTimeout(function () {
