@@ -569,6 +569,30 @@
       "title": "Beej's Guide to Network Programming",
       "author": "Brian “Beej Jorgensen” Hall · 134 pages",
       "file": "books/Beejs Guide to Network Programming Using Internet Sockets.pdf"
+    },
+    {
+      "id": "cpp-notes-for-professionals",
+      "title": "C++ Notes for Professionals",
+      "author": "GoalKicker.com · 708 pages",
+      "file": "books/CPlusPlusNotesForProfessionals.pdf"
+    },
+    {
+      "id": "c-notes-for-professionals",
+      "title": "C Notes for Professionals",
+      "author": "GoalKicker.com · 342 pages",
+      "file": "books/CNotesForProfessionals.pdf"
+    },
+    {
+      "id": "objective-c-notes-for-professionals",
+      "title": "Objective-C Notes for Professionals",
+      "author": "GoalKicker.com · 129 pages",
+      "file": "books/ObjectiveCNotesForProfessionals.pdf"
+    },
+    {
+      "id": "csharp-notes-for-professionals",
+      "title": "C# Notes for Professionals",
+      "author": "GoalKicker.com · 808 pages",
+      "file": "books/CSharpNotesForProfessionals.pdf"
     }
   ]
 }
