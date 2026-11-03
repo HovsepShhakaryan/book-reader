@@ -479,6 +479,30 @@
       "title": "Ruby Programming",
       "author": "Wikibooks.org · 261 pages",
       "file": "books/Ruby_Programming.pdf"
+    },
+    {
+      "id": "think-java",
+      "title": "Think Java: How to Think Like a Computer Scientist",
+      "author": "Allen B. Downey & Chris Mayfield · 291 pages",
+      "file": "books/Think_Java_How_to_Think_Like_a_Computer_Scientist_Version_6.pdf"
+    },
+    {
+      "id": "into-the-core-tiny-core-linux",
+      "title": "Into the Core: A Look at Tiny Core Linux",
+      "author": "Lauri Kasanen et al. · 163 pages",
+      "file": "books/Into_the_Core_A_look_at_Tiny_Core_Linux.pdf"
+    },
+    {
+      "id": "the-little-go-book",
+      "title": "The Little Go Book",
+      "author": "Karl Seguin · 84 pages",
+      "file": "books/The_Little_Go_Book.pdf"
+    },
+    {
+      "id": "linux-notes-for-professionals",
+      "title": "Linux Notes for Professionals",
+      "author": "GoalKicker.com · 65 pages",
+      "file": "books/LinuxNotesForProfessionals.pdf"
     }
   ]
 }
