@@ -329,6 +329,24 @@
       "title": "Hibernate Notes for Professionals",
       "author": "GoalKicker.com · 39 pages",
       "file": "books/HibernateNotesForProfessionals.pdf"
+    },
+    {
+      "id": "python-in-hydrology",
+      "title": "Python in Hydrology",
+      "author": "Sat Kumar Tomer · 127 pages",
+      "file": "books/pythonhydro.pdf"
+    },
+    {
+      "id": "invent-with-python",
+      "title": "Invent Your Own Computer Games with Python (3rd Edition)",
+      "author": "Al Sweigart · 367 pages",
+      "file": "books/inventwithpython_3rd.pdf"
+    },
+    {
+      "id": "annotated-algorithms-in-python",
+      "title": "Annotated Algorithms in Python",
+      "author": "Massimo Di Pierro · 384 pages",
+      "file": "books/Annotated_Algorithms_In_Python.pdf"
     }
   ]
 }
