@@ -365,6 +365,24 @@
       "title": "jQuery Notes for Professionals",
       "author": "GoalKicker.com · 67 pages",
       "file": "books/jQueryNotesForProfessionals.pdf"
+    },
+    {
+      "id": "nodejs-notes-for-professionals",
+      "title": "Node.js Notes for Professionals",
+      "author": "GoalKicker.com · 334 pages",
+      "file": "books/NodeJSNotesForProfessionals.pdf"
+    },
+    {
+      "id": "reactjs-notes-for-professionals",
+      "title": "React JS Notes for Professionals",
+      "author": "GoalKicker.com · 110 pages",
+      "file": "books/ReactJSNotesForProfessionals.pdf"
+    },
+    {
+      "id": "react-native-notes-for-professionals",
+      "title": "React Native Notes for Professionals",
+      "author": "GoalKicker.com · 91 pages",
+      "file": "books/ReactNativeNotesForProfessionals.pdf"
     }
   ]
 }
