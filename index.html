@@ -555,7 +555,7 @@ body.calm #rail { opacity: .35; }
 <div id="wallHint" hidden>Tap a page to jump · spread two fingers to go back</div>
 
 <div id="zoom"><div id="zoomInner"></div></div>
-<div id="zoomTag" hidden>Drag to move · double-tap to zoom out</div>
+<div id="zoomTag" hidden>Pinch or double-tap to zoom out · drag to move</div>
 
 <div id="rotate"><div>
   <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></svg>
@@ -1020,7 +1020,7 @@ body.calm #rail { opacity: .35; }
 
   function updateHint() {
     hintMain.textContent = readMode ? 'Scroll to read · tap for menu' : 'Swipe up · tap for menu · double-tap to zoom';
-    hintSub.textContent = readMode ? 'Tap Auto-scroll to read hands-free' : 'Pinch to see all pages · hold the right edge to jump';
+    hintSub.textContent = readMode ? 'Two fingers to zoom · tap Auto-scroll to read hands-free' : 'Two fingers to zoom · hold the right edge to jump';
   }
   var hintMain = $('hintMain'), hintSub = $('hintSub');
 
@@ -1202,40 +1202,123 @@ body.calm #rail { opacity: .35; }
     }
     return current;
   }
-  function openZoom(x, y) {
-    if (zoomed || !doc || !slides.length) return;
+  /* Zoom viewer: one sharp copy of the page, shown at any scale (1 = the page as it fits the screen).
+     Double-tap opens it at a fixed scale; two fingers zoom smoothly and keep the spot under them in place. */
+  var zs = null;                       // { idx, w1, h1, scale, canvas }
+  var ZOOM_MAX = 5;
+  function zoomPads(W, H) {
+    var vw = window.innerWidth, vh = window.innerHeight;
+    return { x: Math.max(0, (vw - W) / 2), y: Math.max(0, (vh - H) / 2) };
+  }
+  // put content point (fx, fy) of the page (0..1) under screen point (ax, ay) at this scale
+  function zoomLayout(scale, fx, fy, ax, ay) {
+    if (!zs) return;
+    zs.scale = scale;
+    var W = Math.round(zs.w1 * scale), H = Math.round(zs.h1 * scale);
+    zs.canvas.style.width = W + 'px'; zs.canvas.style.height = H + 'px';
+    var pad = zoomPads(W, H);   // the zoom layer is 40px larger than the screen (hidden scroll bars), see CSS
+    zoomInner.style.padding = pad.y + 'px ' + (pad.x + 40) + 'px ' + (pad.y + 40) + 'px ' + pad.x + 'px';
+    zoom.scrollLeft = pad.x + fx * W - ax;
+    zoom.scrollTop = pad.y + fy * H - ay;
+  }
+  // which point of the page (0..1) is under screen point (ax, ay) right now
+  function zoomPointAt(ax, ay) {
+    var W = zs.w1 * zs.scale, H = zs.h1 * zs.scale, pad = zoomPads(W, H);
+    return {
+      fx: Math.min(1, Math.max(0, (zoom.scrollLeft + ax - pad.x) / W)),
+      fy: Math.min(1, Math.max(0, (zoom.scrollTop + ay - pad.y) / H))
+    };
+  }
+  function openZoomAt(x, y, scale) {
+    if (zoomed || !doc || !slides.length) return false;
     var idx = slideAt(x, y), sl = slides[idx];
     var r = sl.page.getBoundingClientRect();
+    if (!r.width || !r.height) return false;
     var fx = Math.min(1, Math.max(0, (x - r.left) / r.width));
     var fy = Math.min(1, Math.max(0, (y - r.top) / r.height));
     zoomed = true;
+    if (autoOn && playing) pause();
+    // show at once: the page already on screen, stretched; a sharp copy follows
+    var c = document.createElement('canvas');
+    var small = sl.page.querySelector('canvas');
+    c.width = small ? small.width : 10; c.height = small ? small.height : 10;
+    if (small) c.getContext('2d').drawImage(small, 0, 0);
+    zoomInner.innerHTML = ''; zoomInner.appendChild(c);
+    zs = { idx: idx, w1: r.width, h1: r.height, scale: scale, canvas: c };
+    zoom.classList.add('on'); zoomTag.hidden = false;
+    zoomLayout(scale, fx, fy, x, y);
     var my = token;
     doc.getPage(idx + 1).then(function (page) {
-      if (my !== token || !zoomed) return;
-      var b = fitBox(idx), cssScale = b.k * (readMode ? 1.8 : ZOOM);
+      if (my !== token || !zoomed || !zs || zs.canvas !== c) return;
       var v1 = page.getViewport({ scale: 1 });
-      var px = cssScale * dpr();
+      var px = (zs.w1 / v1.width) * ZOOM_MAX * 0.8 * dpr();      // sharp up to about 4x
       if (v1.width * v1.height * px * px > MAX_PIXELS) px = Math.sqrt(MAX_PIXELS / (v1.width * v1.height));
-      var cssW = Math.round(v1.width * cssScale), cssH = Math.round(v1.height * cssScale);
       var vp = page.getViewport({ scale: px });
-      var c = document.createElement('canvas');
-      c.width = Math.floor(vp.width); c.height = Math.floor(vp.height);
-      c.style.width = cssW + 'px'; c.style.height = cssH + 'px';
-      var small = sl.page.querySelector('canvas');
-      if (small) c.getContext('2d').drawImage(small, 0, 0, c.width, c.height);
-      zoomInner.innerHTML = ''; zoomInner.appendChild(c);
-      var vw = window.innerWidth, vh = window.innerHeight;   // the zoom layer itself is 40px larger, see CSS
-      var padY = Math.max(0, (vh - cssH) / 2), padX = Math.max(0, (vw - cssW) / 2);
-      zoomInner.style.padding = padY + 'px ' + (padX + 40) + 'px ' + (padY + 40) + 'px ' + padX + 'px';
-      zoom.classList.add('on'); zoomTag.hidden = false;
-      zoom.scrollLeft = fx * cssW - vw / 2;
-      zoom.scrollTop = fy * cssH - vh / 2;
-      page.render({ canvasContext: c.getContext('2d'), viewport: vp }).promise.catch(function () {});
+      var hi = document.createElement('canvas');
+      hi.width = Math.floor(vp.width); hi.height = Math.floor(vp.height);
+      return page.render({ canvasContext: hi.getContext('2d'), viewport: vp }).promise.then(function () {
+        if (!zs || zs.canvas !== c) { hi.width = 0; hi.height = 0; return; }
+        hi.style.width = c.style.width; hi.style.height = c.style.height;
+        zoomInner.replaceChild(hi, c);
+        c.width = 0; c.height = 0;
+        zs.canvas = hi;
+      });
+    }).catch(function () {});
+    return true;
+  }
+  function openZoom(x, y) { openZoomAt(x, y, readMode ? 1.8 : ZOOM); }
+
+  /* two fingers: spread to zoom in, pinch to zoom out; pinching an unzoomed page opens the page wall */
+  function bindTwoFingers() {
+    var g = null;
+    function info(t) {
+      return {
+        d: Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY),
+        x: (t[0].clientX + t[1].clientX) / 2, y: (t[0].clientY + t[1].clientY) / 2
+      };
+    }
+    function start(e, onZoomLayer) {
+      if (e.touches.length !== 2) return;
+      var i = info(e.touches);
+      g = { d0: i.d, onZoomLayer: onZoomLayer, started: zoomed, wall: false };
+      if (zoomed && zs) { g.s0 = zs.scale; var pt = zoomPointAt(i.x, i.y); g.fx = pt.fx; g.fy = pt.fy; }
+    }
+    function move(e) {
+      if (!g || e.touches.length !== 2 || g.wall) return;
+      var i = info(e.touches), ratio = i.d / Math.max(1, g.d0);
+      if (!g.started) {
+        if (ratio > 1.06) {                                   // spreading: start zooming from this spot
+          if (!openZoomAt(i.x, i.y, 1)) { g = null; return; }
+          g.started = true; g.s0 = 1 / ratio; var pt = zoomPointAt(i.x, i.y); g.fx = pt.fx; g.fy = pt.fy;
+        } else if (ratio < 0.72) {                            // pinching an unzoomed page: page wall
+          g.wall = true; openWall(); return;
+        } else return;
+      }
+      if (e.cancelable) e.preventDefault();
+      var sc = Math.max(0.7, Math.min(ZOOM_MAX * 1.15, g.s0 * ratio));
+      zoomLayout(sc, g.fx, g.fy, i.x, i.y);
+    }
+    function end(e) {
+      if (!g || e.touches.length >= 2) return;
+      var was = g; g = null;
+      if (!was.started || !zs) return;
+      if (zs.scale < 1.12) { closeZoom(); return; }           // back to the normal page
+      if (zs.scale > ZOOM_MAX) {                              // gently settle at the maximum
+        var vw = window.innerWidth / 2, vh = window.innerHeight / 2, pt = zoomPointAt(vw, vh);
+        zoomLayout(ZOOM_MAX, pt.fx, pt.fy, vw, vh);
+      }
+    }
+    [feed, zoom].forEach(function (el) {
+      el.addEventListener('touchstart', function (e) { start(e, el === zoom); }, { passive: true });
+      el.addEventListener('touchmove', move, { passive: false });
+      el.addEventListener('touchend', end, { passive: true });
+      el.addEventListener('touchcancel', end, { passive: true });
     });
   }
+  bindTwoFingers();
   function closeZoom() {
     if (!zoomed) return;
-    zoomed = false;
+    zoomed = false; zs = null;
     zoom.classList.remove('on'); zoomTag.hidden = true;
     setTimeout(function () {
       if (zoomed) return;
@@ -1370,7 +1453,6 @@ body.calm #rail { opacity: .35; }
   });
   $('wallClose').addEventListener('click', closeWall);
   $('wallBtn').addEventListener('click', openWall);
-  bindPinch(feed, openWall, null);
   bindPinch(wall, null, closeWall);
 
   /* ======================= hold and slide: page finder on the right edge ======================= */
