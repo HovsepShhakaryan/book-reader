@@ -383,6 +383,24 @@
       "title": "React Native Notes for Professionals",
       "author": "GoalKicker.com · 91 pages",
       "file": "books/ReactNativeNotesForProfessionals.pdf"
+    },
+    {
+      "id": "eloquent-javascript",
+      "title": "Eloquent JavaScript (4th Edition)",
+      "author": "Marijn Haverbeke · 676 pages",
+      "file": "books/Eloquent_JavaScript_small.pdf"
+    },
+    {
+      "id": "javascript-notes-for-professionals",
+      "title": "JavaScript Notes for Professionals",
+      "author": "GoalKicker.com · 490 pages",
+      "file": "books/JavaScriptNotesForProfessionals.pdf"
+    },
+    {
+      "id": "typescript-notes-for-professionals",
+      "title": "TypeScript Notes for Professionals",
+      "author": "GoalKicker.com · 97 pages",
+      "file": "books/TypeScriptNotesForProfessionals.pdf"
     }
   ]
 }
