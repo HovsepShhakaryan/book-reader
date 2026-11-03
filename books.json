@@ -437,6 +437,24 @@
       "title": "Making Games with Python & Pygame",
       "author": "Al Sweigart · 365 pages",
       "file": "books/makinggames.pdf"
+    },
+    {
+      "id": "think-complexity",
+      "title": "Think Complexity",
+      "author": "Allen B. Downey · 148 pages",
+      "file": "books/thinkcomplexity.pdf"
+    },
+    {
+      "id": "think-stats",
+      "title": "Think Stats: Probability and Statistics for Programmers",
+      "author": "Allen B. Downey · 140 pages",
+      "file": "books/thinkstats.pdf"
+    },
+    {
+      "id": "think-stats-2",
+      "title": "Think Stats 2: Exploratory Data Analysis in Python",
+      "author": "Allen B. Downey · 264 pages",
+      "file": "books/thinkstats2.pdf"
     }
   ]
 }
