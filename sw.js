@@ -19,10 +19,10 @@ self.addEventListener('activate', function (e) {
 var OFFLINE_PAGE =
   '<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' +
   '<title>Swipe Book</title>' +
-  '<body style="margin:0;height:100vh;display:grid;place-items:center;background:#0d0f14;color:#eef1f6;' +
+  '<body style="margin:0;height:100vh;display:grid;place-items:center;background:#1f1022;color:#f8eef6;' +
   'font:16px system-ui,-apple-system,sans-serif;text-align:center;padding:24px;box-sizing:border-box">' +
   '<div><p style="font-weight:700;font-size:18px;margin:0 0 6px">No internet connection</p>' +
-  '<p style="color:#98a1b0;margin:0">Connect to the internet and open the app again.</p></div></body>';
+  '<p style="color:#c4a9c2;margin:0">Connect to the internet and open the app again.</p></div></body>';
 
 // Files that never change at the same address:
 // covers/<id>.jpg?v=<version> (a new cover gets a new version) and the PDF engine in lib/.
