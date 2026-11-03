@@ -545,6 +545,30 @@
       "title": "Java Notes for Professionals",
       "author": "GoalKicker.com · 982 pages",
       "file": "books/JavaNotesForProfessionals.pdf"
+    },
+    {
+      "id": "think-cpp",
+      "title": "How to Think Like a Computer Scientist (Think C++)",
+      "author": "Allen B. Downey · 191 pages",
+      "file": "books/How To Think Like A Computer Scientist C Version.pdf"
+    },
+    {
+      "id": "oop-with-ansi-c",
+      "title": "Object-Oriented Programming with ANSI-C",
+      "author": "Axel-Tobias Schreiner · 221 pages",
+      "file": "books/Object-oriented Programming with Ansi-C.pdf"
+    },
+    {
+      "id": "programming-fundamentals-cpp",
+      "title": "Programming Fundamentals: A Modular Structured Approach using C++",
+      "author": "Kenneth Leroy Busbee · 314 pages",
+      "file": "books/Programming Fundamentals A Modular Structured Approach Using C.pdf"
+    },
+    {
+      "id": "beejs-guide-network-programming",
+      "title": "Beej's Guide to Network Programming",
+      "author": "Brian “Beej Jorgensen” Hall · 134 pages",
+      "file": "books/Beejs Guide to Network Programming Using Internet Sockets.pdf"
     }
   ]
 }
