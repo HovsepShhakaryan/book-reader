@@ -293,6 +293,24 @@
       "title": ".NET Framework Notes for Professionals",
       "author": "GoalKicker.com · 192 pages",
       "file": "books/DotNETFrameworkNotesForProfessionals.pdf"
+    },
+    {
+      "id": "vba-notes-for-professionals",
+      "title": "VBA Notes for Professionals",
+      "author": "GoalKicker.com · 202 pages",
+      "file": "books/VBANotesForProfessionals.pdf"
+    },
+    {
+      "id": "git-notes-for-professionals",
+      "title": "Git Notes for Professionals",
+      "author": "GoalKicker.com · 195 pages",
+      "file": "books/GitNotesForProfessionals.pdf"
+    },
+    {
+      "id": "latex-notes-for-professionals",
+      "title": "LaTeX Notes for Professionals",
+      "author": "GoalKicker.com · 60 pages",
+      "file": "books/LaTeXNotesForProfessionals.pdf"
     }
   ]
 }
