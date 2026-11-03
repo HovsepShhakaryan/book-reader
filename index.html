@@ -714,6 +714,7 @@ body.calm #rail { opacity: .35; }
     if (thumbBusy || !thumbQueue.length || !reader.hidden) return;   // pause while a book is open
     thumbBusy = true;
     var job = thumbQueue.shift(), b = job.b;
+    if (!job.img.isConnected || !job.img._want) { thumbBusy = false; setTimeout(nextThumb, 0); return; }
     try { if (!thumbWorker) thumbWorker = new lib.PDFWorker(); } catch (e) {}
     var opts = { url: b.file, disableAutoFetch: true, disableStream: true };
     if (thumbWorker) opts.worker = thumbWorker;
@@ -733,7 +734,7 @@ body.calm #rail { opacity: .35; }
         return new Promise(function (res) {
           c.toBlob(function (bl) {
             c.width = 0; c.height = 0;
-            if (bl) { setCover(job.img, URL.createObjectURL(bl)); saveCover(b, bl); }
+            if (bl) { saveCover(b, bl); if (job.img._want) showCover(job.img, URL.createObjectURL(bl), false, true); }
             res();
           }, 'image/jpeg', 0.8);
         });
@@ -745,106 +746,145 @@ body.calm #rail { opacity: .35; }
         setTimeout(nextThumb, 30);
       });
   }
-  var coverObserver = ('IntersectionObserver' in window) ? new IntersectionObserver(function (entries) {
-    entries.forEach(function (en) {
-      if (!en.isIntersecting) return;
-      coverObserver.unobserve(en.target);
-      var b = en.target._book, img = en.target.querySelector('img');
-      queueThumb(b, img);
-    });
-  }, { rootMargin: '300px 0px' }) : null;
-
-  function deviceCover(b, img, cover) {
+  /* ---- library list: only what is near the screen lives in memory ----
+     - cards are built 30 at a time as you scroll down (PER_PAGE)
+     - a cover loads when its card comes near the screen
+     - covers far off screen are let go, and come back from the saved copy when you scroll back */
+  var cardIO = null, farIO = null;
+  if ('IntersectionObserver' in window) {
+    cardIO = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) { if (en.isIntersecting) loadCover(en.target); });
+    }, { root: library, rootMargin: '600px 0px' });
+    farIO = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) { if (!en.isIntersecting) unloadCover(en.target); });
+    }, { root: library, rootMargin: '2500px 0px' });
+  }
+  // show a cover picture in a card; `own` = an object URL this page made (freed when let go)
+  function showCover(img, src, instant, own) {
+    if (img._own) { try { URL.revokeObjectURL(img._own); } catch (e) {} }
+    img._own = own ? src : null;
+    setCover(img, src, instant);
+  }
+  function loadCover(cover) {
+    var img = cover._img, b = cover._book;
+    if (img._want) return;
+    img._want = true;
+    if (b.cover) { showCover(img, b.cover); return; }
+    if (coverMap[b.id]) {
+      img.onerror = function () { img.onerror = null; if (img._want) deviceCover(b, img); };
+      showCover(img, 'covers/' + encodeURIComponent(b.id) + '.jpg?v=' + encodeURIComponent(coverMap[b.id]));
+      return;
+    }
+    deviceCover(b, img);
+  }
+  function unloadCover(cover) {
+    var img = cover._img;
+    if (!img._want) return;
+    img._want = false;
+    img.onload = null; img.onerror = null;
+    img.classList.remove('on', 'instant');
+    img.removeAttribute('src');
+    if (img._own) { try { URL.revokeObjectURL(img._own); } catch (e) {} img._own = null; }
+  }
+  function deviceCover(b, img) {
     getSavedCover(b).then(function (url) {
-      if (url) setCover(img, url, true);
-      else if (coverObserver) coverObserver.observe(cover);
+      if (!img._want) { if (url && url.indexOf('blob:') === 0) URL.revokeObjectURL(url); return; }
+      if (url) showCover(img, url, true, url.indexOf('blob:') === 0);
       else queueThumb(b, img);
     });
-  }
-
-  function renderLibrary() {
-    list.innerHTML = '';
-    libSub.textContent = books.length === 1 ? '1 book' : books.length + ' books';
-    if (!books.length) { list.innerHTML = '<div class="empty">No books yet.</div>'; return; }
-    books.forEach(function (b, i) {
-      var btn = document.createElement('button');
-      btn._book = b;
-      btn.type = 'button'; btn.className = 'book';
-      btn.setAttribute('aria-label', b.title || b.id);
-      var cover = document.createElement('div');
-      cover.className = 'cover';
-      cover.style.background = COLORS[i % COLORS.length];
-      cover.textContent = (b.title || '?').trim().charAt(0).toUpperCase();
-      var img = document.createElement('img');
-      img.alt = ''; img.decoding = 'async';
-      cover.appendChild(img);
-      cover._book = b;
-      var t = document.createElement('div'); t.className = 't'; t.textContent = b.title || b.id;
-      btn.appendChild(cover); btn.appendChild(t);
-      if (b.author) { var a = document.createElement('div'); a.className = 'a'; a.textContent = b.author; btn.appendChild(a); }
-      btn.addEventListener('click', function () { openBook(b, true); });
-      btn._text = norm((b.title || '') + ' ' + (b.author || '') + ' ' + b.id);
-      list.appendChild(btn);
-
-      // cover: "cover" from books.json, else the ready-made one from GitHub, else this phone's own
-      if (b.cover) setCover(img, b.cover);
-      else if (coverMap[b.id]) {
-        img.onerror = (function (bk, im, cv) { return function () { im.onerror = null; deviceCover(bk, im, cv); }; })(b, img, cover);
-        setCover(img, 'covers/' + encodeURIComponent(b.id) + '.jpg?v=' + encodeURIComponent(coverMap[b.id]));
-      }
-      else deviceCover(b, img, cover);
-    });
-    applySearch();
   }
 
   /* search: matches title, author and id; every word must match, in any order */
   var searchInput = $('search'), searchClear = $('searchClear'), noMatch = $('noMatch');
   function norm(t) {
     t = String(t || '').toLowerCase();
-    try { t = t.normalize('NFD').replace(/[\u0300-\u036f]/g, ''); } catch (e) {}
+    try { t = t.normalize('NFD').replace(/[̀-ͯ]/g, ''); } catch (e) {}
     return t.replace(/[_\-.,:;·]+/g, ' ');
   }
-  var shownCount = PER_PAGE;
   var more = $('more'), moreLeft = false;
+  var matches = [], built = 0;            // books matching the search, and how many cards exist
+  var textCache = (typeof WeakMap === 'function') ? new WeakMap() : null;
+  function textOf(b) {
+    var t = textCache && textCache.get(b);
+    if (t == null) { t = norm((b.title || '') + ' ' + (b.author || '') + ' ' + b.id); if (textCache) textCache.set(b, t); }
+    return t;
+  }
+
+  function makeCard(b) {
+    var i = books.indexOf(b);
+    var btn = document.createElement('button');
+    btn.type = 'button'; btn.className = 'book';
+    btn.setAttribute('aria-label', b.title || b.id);
+    var cover = document.createElement('div');
+    cover.className = 'cover';
+    cover.style.background = COLORS[(i < 0 ? 0 : i) % COLORS.length];
+    cover.textContent = (b.title || '?').trim().charAt(0).toUpperCase();
+    var img = document.createElement('img');
+    img.alt = ''; img.decoding = 'async'; img._want = false;
+    cover.appendChild(img);
+    cover._book = b; cover._img = img;
+    var t = document.createElement('div'); t.className = 't'; t.textContent = b.title || b.id;
+    btn.appendChild(cover); btn.appendChild(t);
+    if (b.author) { var a = document.createElement('div'); a.className = 'a'; a.textContent = b.author; btn.appendChild(a); }
+    btn.addEventListener('click', function () { openBook(b, true); });
+    if (cardIO) { cardIO.observe(cover); farIO.observe(cover); } else loadCover(cover);
+    return btn;
+  }
+  function clearCards() {
+    var covers = list.querySelectorAll('.cover');
+    for (var k = 0; k < covers.length; k++) {
+      unloadCover(covers[k]);
+      if (cardIO) { cardIO.unobserve(covers[k]); farIO.unobserve(covers[k]); }
+    }
+    list.innerHTML = '';
+    built = 0;
+  }
+  function buildMore() {
+    var frag = document.createDocumentFragment(), end = Math.min(matches.length, built + PER_PAGE);
+    for (var k = built; k < end; k++) frag.appendChild(makeCard(matches[k]));
+    list.appendChild(frag);
+    built = end;
+    moreLeft = built < matches.length;
+    more.hidden = !moreLeft;
+    if (moreLeft) setTimeout(checkMore, 50);   // screen not full yet? add more right away
+  }
+  // rebuild the list from the start (new books, or a new search)
   function applySearch() {
     var words = norm(searchInput.value).split(/\s+/).filter(Boolean);
-    var items = list.querySelectorAll('.book'), matches = 0;
-    for (var i = 0; i < items.length; i++) {
-      var hit = words.every(function (w) { return items[i]._text.indexOf(w) !== -1; });
-      if (hit) matches++;
-      items[i].hidden = !hit || matches > shownCount;   // only the first `shownCount` matches are shown
-    }
-    moreLeft = matches > shownCount;
-    more.hidden = !moreLeft;
-
+    matches = books.filter(function (b) {
+      var tx = textOf(b);
+      return words.every(function (w) { return tx.indexOf(w) !== -1; });
+    });
+    clearCards();
     searchClear.hidden = !searchInput.value;
-    if (!books.length) return;
+    if (!books.length) {
+      libSub.textContent = '0 books'; more.hidden = true; noMatch.hidden = true;
+      list.innerHTML = '<div class="empty">No books yet.</div>';
+      return;
+    }
     if (words.length) {
-      libSub.textContent = matches + ' of ' + books.length + (books.length === 1 ? ' book' : ' books');
-      noMatch.hidden = matches > 0;
+      libSub.textContent = matches.length + ' of ' + books.length + (books.length === 1 ? ' book' : ' books');
+      noMatch.hidden = matches.length > 0;
       noMatch.textContent = 'No books match “' + searchInput.value.trim() + '”.';
     } else {
       libSub.textContent = books.length === 1 ? '1 book' : books.length + ' books';
       noMatch.hidden = true;
     }
-    if (moreLeft) setTimeout(checkMore, 50);   // screen not full yet? add more right away
+    buildMore();
   }
+  function renderLibrary() { applySearch(); }
+
   // when the bottom of the list comes into view, add the next 30 books
-  function loadMore() {
-    if (!moreLeft || library.hidden) return;
-    shownCount += PER_PAGE;
-    applySearch();
-  }
   function checkMore() {
     if (!moreLeft || library.hidden) return;
     var r = more.getBoundingClientRect();
-    if (r.top < window.innerHeight + 400) loadMore();
+    if (r.top < window.innerHeight + 400) buildMore();
   }
   library.addEventListener('scroll', checkMore, { passive: true });
   window.addEventListener('resize', checkMore);
-  searchInput.addEventListener('input', function () { shownCount = PER_PAGE; library.scrollTop = 0; applySearch(); });
+  searchInput.addEventListener('input', function () { library.scrollTop = 0; applySearch(); });
   searchInput.addEventListener('keydown', function (e) { if (e.key === 'Enter') searchInput.blur(); });
-  searchClear.addEventListener('click', function () { searchInput.value = ''; shownCount = PER_PAGE; applySearch(); searchInput.focus(); });
+  searchClear.addEventListener('click', function () { searchInput.value = ''; applySearch(); searchInput.focus(); });
 
   /* grid / list switch, remembered on this device */
   var viewGrid = $('viewGrid'), viewList = $('viewList');
