@@ -503,6 +503,30 @@
       "title": "Linux Notes for Professionals",
       "author": "GoalKicker.com · 65 pages",
       "file": "books/LinuxNotesForProfessionals.pdf"
+    },
+    {
+      "id": "mastering-ejb-3rd-edition",
+      "title": "Mastering Enterprise JavaBeans (3rd Edition)",
+      "author": "Ed Roman, Rima Patel Sriganesh & Gerald Brose · 841 pages",
+      "file": "books/MasteringEJB3rdEd.pdf"
+    },
+    {
+      "id": "open-data-structures-java",
+      "title": "Open Data Structures (in Java)",
+      "author": "Pat Morin · 334 pages",
+      "file": "books/ods-java-screen.pdf"
+    },
+    {
+      "id": "spring-framework-notes-for-professionals",
+      "title": "Spring Framework Notes for Professionals",
+      "author": "GoalKicker.com · 68 pages",
+      "file": "books/SpringFrameworkNotesForProfessionals.pdf"
+    },
+    {
+      "id": "java-ee-notes-for-professionals",
+      "title": "Java EE Notes for Professionals",
+      "author": "GoalKicker.com · 32 pages",
+      "file": "books/JavaEENotesForProfessionals.pdf"
     }
   ]
 }
