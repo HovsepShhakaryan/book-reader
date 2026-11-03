@@ -347,6 +347,24 @@
       "title": "Annotated Algorithms in Python",
       "author": "Massimo Di Pierro · 384 pages",
       "file": "books/Annotated Algorithms In Python.pdf"
+    },
+    {
+      "id": "angular2-notes-for-professionals",
+      "title": "Angular 2 Notes for Professionals",
+      "author": "GoalKicker.com · 232 pages",
+      "file": "books/Angular2NotesForProfessionals.pdf"
+    },
+    {
+      "id": "angularjs-notes-for-professionals",
+      "title": "AngularJS Notes for Professionals",
+      "author": "GoalKicker.com · 201 pages",
+      "file": "books/AngularJSNotesForProfessionals.pdf"
+    },
+    {
+      "id": "jquery-notes-for-professionals",
+      "title": "jQuery Notes for Professionals",
+      "author": "GoalKicker.com · 67 pages",
+      "file": "books/jQueryNotesForProfessionals.pdf"
     }
   ]
 }
