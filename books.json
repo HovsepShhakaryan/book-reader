@@ -695,6 +695,24 @@
       "title": "Mobile Developer's Guide to the Galaxy",
       "author": "Open-Xchange & Customlytics · 18th Edition · 337 pages",
       "file": "books/Mobile_Developers_Guide_18th_edition_web.pdf"
+    },
+    {
+      "id": "swift-notes-for-professionals",
+      "title": "Swift Notes for Professionals",
+      "author": "GoalKicker.com · 291 pages",
+      "file": "books/SwiftNotesForProfessionals.pdf"
+    },
+    {
+      "id": "pro-git",
+      "title": "Pro Git",
+      "author": "Scott Chacon & Ben Straub · 2nd Edition · 522 pages",
+      "file": "books/Pro Git.pdf"
+    },
+    {
+      "id": "managing-risk-and-information-security",
+      "title": "Managing Risk and Information Security: Protect to Enable",
+      "author": "Malcolm Harkins · 145 pages",
+      "file": "books/Managing Risk and Information Security Protect to Enable.pdf"
     }
   ]
 }
