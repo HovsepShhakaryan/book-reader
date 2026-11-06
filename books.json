@@ -647,6 +647,30 @@
       "title": "Combinatorial Optimization: Exact and Approximate Algorithms",
       "author": "Luca Trevisan · Stanford University · 139 pages",
       "file": "books/Combinatorial Optimization Exact and Approximate Algorithms.pdf"
+    },
+    {
+      "id": "microsoft-sql-server-notes-for-professionals",
+      "title": "Microsoft SQL Server Notes for Professionals",
+      "author": "GoalKicker.com · 286 pages",
+      "file": "books/MicrosoftSQLServerNotesForProfessionals.pdf"
+    },
+    {
+      "id": "postgresql-notes-for-professionals",
+      "title": "PostgreSQL Notes for Professionals",
+      "author": "GoalKicker.com · 74 pages",
+      "file": "books/PostgreSQLNotesForProfessionals.pdf"
+    },
+    {
+      "id": "ruby-on-rails-notes-for-professionals",
+      "title": "Ruby on Rails Notes for Professionals",
+      "author": "GoalKicker.com · 231 pages",
+      "file": "books/RubyOnRailsNotesForProfessionals.pdf"
+    },
+    {
+      "id": "think-complexity",
+      "title": "Think Complexity",
+      "author": "Allen B. Downey · Green Tea Press · 148 pages",
+      "file": "books/thinkcomplexity.pdf"
     }
   ]
 }
