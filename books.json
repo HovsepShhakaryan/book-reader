@@ -623,6 +623,30 @@
       "title": "Class Notes for Randomized Algorithms",
       "author": "Sariel Har-Peled · 385 pages",
       "file": "books/CS 573 Graduate Algorithms.pdf"
+    },
+    {
+    "id": "mysql-notes-for-professionals",
+    "title": "MySQL Notes for Professionals",
+    "author": "GoalKicker.com · 199 pages",
+    "file": "books/MySQLNotesForProfessionals.pdf"
+    },
+    {
+      "id": "sql-notes-for-professionals",
+      "title": "SQL Notes for Professionals",
+      "author": "GoalKicker.com · 166 pages",
+      "file": "books/SQLNotesForProfessionals.pdf"
+    },
+    {
+      "id": "ruby-notes-for-professionals",
+      "title": "Ruby Notes for Professionals",
+      "author": "GoalKicker.com · 235 pages",
+      "file": "books/RubyNotesForProfessionals.pdf"
+    },
+    {
+      "id": "combinatorial-optimization-exact-and-approximate-algorithms",
+      "title": "Combinatorial Optimization: Exact and Approximate Algorithms",
+      "author": "Luca Trevisan · Stanford University · 139 pages",
+      "file": "books/Combinatorial Optimization Exact and Approximate Algorithms.pdf"
     }
   ]
 }
