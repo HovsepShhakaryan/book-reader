@@ -749,6 +749,18 @@
       "title": "iOS Developer Notes for Professionals",
       "author": "GoalKicker.com · 893 pages",
       "file": "books/iOSNotesForProfessionals.pdf"
+    },
+    {
+      "id": "dissecting-a-csharp-application",
+      "title": "Dissecting a C# Application: Inside SharpDevelop",
+      "author": "Christian Holm, Mike Krüger, Bernhard Spuida · 538 pages",
+      "file": "books/Dissecting_A_CSharp_Application.pdf"
+    },
+    {
+      "id": "introduction-to-autonomous-robots",
+      "title": "Introduction to Autonomous Robots",
+      "author": "Nikolaus Correll · 226 pages",
+      "file": "books/Introduction to Autonomous Robots(1).pdf"
     }
   ]
 }
