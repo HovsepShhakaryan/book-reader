@@ -737,6 +737,18 @@
       "title": "Android Notes for Professionals",
       "author": "GoalKicker.com · 1329 pages",
       "file": "books/AndroidNotesForProfessionals(1).pdf"
+    },
+    {
+      "id": "csharp-programming-yellow-book",
+      "title": "C# Programming Yellow Book",
+      "author": "Rob Miles · 217 pages",
+      "file": "books/CSharp+Book+2019+Refresh.pdf"
+    },
+    {
+      "id": "ios-notes-for-professionals",
+      "title": "iOS Developer Notes for Professionals",
+      "author": "GoalKicker.com · 893 pages",
+      "file": "books/iOSNotesForProfessionals(1).pdf"
     }
   ]
 }
