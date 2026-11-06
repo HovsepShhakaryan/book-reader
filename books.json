@@ -671,6 +671,30 @@
       "title": "Think Complexity",
       "author": "Allen B. Downey · Green Tea Press · 148 pages",
       "file": "books/thinkcomplexity.pdf"
+    },
+    {
+      "id": "oracle-database-notes-for-professionals",
+      "title": "Oracle Database Notes for Professionals",
+      "author": "GoalKicker.com · 118 pages",
+      "file": "books/OracleDatabaseNotesForProfessionals.pdf"
+    },
+    {
+      "id": "the-little-mongodb-book",
+      "title": "The Little MongoDB Book",
+      "author": "Karl Seguin · 66 pages",
+      "file": "books/mongodb.pdf"
+    },
+    {
+      "id": "ruby-programming",
+      "title": "Ruby Programming",
+      "author": "Wikibooks.org · 261 pages",
+      "file": "books/Ruby_Programming.pdf"
+    },
+    {
+      "id": "mobile-developers-guide-to-the-galaxy",
+      "title": "Mobile Developer's Guide to the Galaxy",
+      "author": "Open-Xchange & Customlytics · 18th Edition · 337 pages",
+      "file": "books/Mobile_Developers_Guide_18th_edition_web.pdf"
     }
   ]
 }
