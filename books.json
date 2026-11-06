@@ -593,6 +593,36 @@
       "title": "C# Notes for Professionals",
       "author": "GoalKicker.com · 808 pages",
       "file": "books/CSharpNotesForProfessionals.pdf"
+    },
+    {
+    "id": "azure-machine-learning",
+    "title": "Azure Machine Learning",
+    "author": "Jeff Barnes · Microsoft Press · 240 pages",
+    "file": "books/Azure Machine Learning.pdf"
+    },
+    {
+      "id": "opening-science",
+      "title": "Opening Science: The Evolving Guide on How the Internet is Changing Research, Collaboration and Scholarly Publishing",
+      "author": "Sönke Bartling & Sascha Friesike · 325 pages",
+      "file": "books/Opening Science The Evolving Guide on How the Internet is Changing Research, Collaboration and Scholarly Publishing.pdf"
+    },
+    {
+      "id": "computer-science-information-technology",
+      "title": "Computer Science & Information Technology",
+      "author": "Dhinaharan Nagamalai & Natarajan Meghanathan · 208 pages",
+      "file": "books/Computer Science & Information Technology.pdf"
+    },
+    {
+      "id": "data-intensive-text-processing-mapreduce",
+      "title": "Data-Intensive Text Processing with MapReduce",
+      "author": "Jimmy Lin & Chris Dyer · 175 pages",
+      "file": "books/MapReduce-book-final.pdf"
+    },
+    {
+      "id": "cs-573-graduate-algorithms",
+      "title": "Class Notes for Randomized Algorithms",
+      "author": "Sariel Har-Peled · 385 pages",
+      "file": "books/CS 573 Graduate Algorithms.pdf"
     }
   ]
 }
