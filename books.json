@@ -713,6 +713,18 @@
       "title": "Managing Risk and Information Security: Protect to Enable",
       "author": "Malcolm Harkins · 145 pages",
       "file": "books/Managing Risk and Information Security Protect to Enable.pdf"
+    },
+    {
+      "id": "android-on-x86",
+      "title": "Android on x86: An Introduction to Optimizing for Intel Architecture",
+      "author": "Iggy Krajci & Darren Cummings · 375 pages",
+      "file": "books/Android x86.pdf"
+    },
+    {
+      "id": "git-notes-for-professionals",
+      "title": "Git Notes for Professionals",
+      "author": "GoalKicker.com · 195 pages",
+      "file": "books/GitNotesForProfessionals.pdf"
     }
   ]
 }
