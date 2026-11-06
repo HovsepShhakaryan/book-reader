@@ -725,6 +725,18 @@
       "title": "Git Notes for Professionals",
       "author": "GoalKicker.com · 195 pages",
       "file": "books/GitNotesForProfessionals.pdf"
+    },
+    {
+      "id": "dotnet-book-zero",
+      "title": ".NET Book Zero",
+      "author": "Charles Petzold · 267 pages",
+      "file": "books/DotNetBookZero11.pdf"
+    },
+    {
+      "id": "android-notes-for-professionals",
+      "title": "Android Notes for Professionals",
+      "author": "GoalKicker.com · 1329 pages",
+      "file": "books/AndroidNotesForProfessionals(1).pdf"
     }
   ]
 }
