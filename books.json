@@ -833,6 +833,36 @@
       "title": "Elements of Kotlin",
       "author": "Mark L. Murphy · CommonsWare · 412 pages",
       "file": "books/elements-of-kotlin.pdf"
+    },
+    {
+      "id": "the-rust-programming-language",
+      "title": "The Rust Programming Language",
+      "author": "Steve Klabnik & Carol Nichols · 670 pages",
+      "file": "books/the-rust-programming-language.pdf"
+    },
+    {
+      "id": "think-java",
+      "title": "Think Java: How to Think Like a Computer Scientist",
+      "author": "Allen B. Downey & Chris Mayfield · 2nd Edition · 366 pages",
+      "file": "books/think-java.pdf"
+    },
+    {
+      "id": "java-java-java",
+      "title": "Java, Java, Java: Object-Oriented Problem Solving",
+      "author": "Ralph Morelli & Ralph Walde · 3rd Edition · 856 pages",
+      "file": "books/java-java-java.pdf"
+    },
+    {
+      "id": "programming-with-java",
+      "title": "Programming With Java",
+      "author": "Ashik Ahmed Bhuiyan & Md Amiruzzaman · 159 pages",
+      "file": "books/programming-with-java.pdf"
+    },
+    {
+      "id": "open-data-structures-in-java",
+      "title": "Open Data Structures (in Java)",
+      "author": "Pat Morin · Edition 0.1E · 291 pages",
+      "file": "books/open-data-structures-in-java.pdf"
     }
   ]
 }
