@@ -791,6 +791,24 @@
       "title": "Coding for Beginners in Easy Steps: Basic Programming for All Ages",
       "author": "Mike McGrath · 346 pages",
       "file": "books/coding-for-beginners-in-easy-steps-basic-programming-for-all-ages.pdf"
+    },
+    {
+      "id": "c-for-java-programmers",
+      "title": "C for Java Programmers",
+      "author": "George Ferguson · Updated 2025 · 87 pages",
+      "file": "books/c-for-java-programmers.pdf"
+    },
+    {
+      "id": "how-to-code-in-go",
+      "title": "How To Code in Go",
+      "author": "Mark Bates, Cory LaNou & Timothy J. Raymond · DigitalOcean · 447 pages",
+      "file": "books/how-to-code-in-go.pdf"
+    },
+    {
+      "id": "how-to-code-in-reactjs",
+      "title": "How To Code in React.js",
+      "author": "Joe Morgan · DigitalOcean · 962 pages",
+      "file": "books/how-to-code-in-reactjs.pdf"
     }
   ]
 }
