@@ -887,6 +887,24 @@
       "title": "The Concise TypeScript Book",
       "author": "Simone Poggiali · 146 pages",
       "file": "books/the-concise-typescript-book.pdf"
+    },
+    {
+      "id": "dotnet-framework-notes-for-professionals",
+      "title": ".NET Framework Notes for Professionals",
+      "author": "GoalKicker.com · 192 pages",
+      "file": "books/dotnet-framework-notes-for-professionals.pdf"
+    },
+    {
+      "id": "php-the-right-way",
+      "title": "PHP: The Right Way",
+      "author": "Josh Lockhart & Phil Sturgeon · 76 pages",
+      "file": "books/php-the-right-way.pdf"
+    },
+    {
+      "id": "introduction-to-python-programming",
+      "title": "Introduction to Python Programming",
+      "author": "Udayan Das, Aubrey Lawson, Chris Mayfield & Narges Norouzi · OpenStax · 397 pages",
+      "file": "books/Introduction_to_Python_Programming-WEB.pdf"
     }
   ]
 }
