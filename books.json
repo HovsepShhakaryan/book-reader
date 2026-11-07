@@ -869,6 +869,24 @@
       "title": "Workplace Software and Skills",
       "author": "Tammie Bolling, Angela Mitchell, Tanya Scott & Nyrobi Wheeler · OpenStax · 68 pages",
       "file": "books/Workplace_Software_and_Skills_-_WEB_IlfJtcP_part.pdf"
+    },
+    {
+      "id": "foundations-of-information-systems",
+      "title": "Foundations of Information Systems",
+      "author": "Dr. Mahesh S. Raisinghani · OpenStax · 366 pages",
+      "file": "books/Foundations_of_Information_Systems_-_WEB_oNlbGYl_part.pdf"
+    },
+    {
+      "id": "introduction-to-computer-science",
+      "title": "Introduction to Computer Science",
+      "author": "Dr. Jean-Claude Franchitti · OpenStax · 315 pages",
+      "file": "books/Introduction_To_Computer_Science_-_WEB_part.pdf"
+    },
+    {
+      "id": "the-concise-typescript-book",
+      "title": "The Concise TypeScript Book",
+      "author": "Simone Poggiali · 146 pages",
+      "file": "books/the-concise-typescript-book.pdf"
     }
   ]
 }
