@@ -755,6 +755,42 @@
       "title": "Introduction to Autonomous Robots",
       "author": "Nikolaus Correll · 226 pages",
       "file": "books/Introduction to Autonomous Robots.pdf"
+    },
+    {
+      "id": "css-notes-for-professionals",
+      "title": "CSS Notes for Professionals",
+      "author": "GoalKicker.com · 244 pages",
+      "file": "books/css-notes-for-professionals.pdf"
+    },
+    {
+      "id": "introduction-to-programming-using-java",
+      "title": "Introduction to Programming Using Java",
+      "author": "David J. Eck · Version 9, JavaFX Edition · 781 pages",
+      "file": "books/javanotes9.pdf"
+    },
+    {
+      "id": "how-to-think-like-a-computer-scientist-c",
+      "title": "How to Think Like a Computer Scientist: C Version",
+      "author": "Thomas Scheffler & Allen B. Downey · 130 pages",
+      "file": "books/Think-C.pdf"
+    },
+    {
+      "id": "the-c-programming-language",
+      "title": "The C Programming Language",
+      "author": "Brian W. Kernighan & Dennis M. Ritchie · 2nd Edition · 295 pages",
+      "file": "books/[Kernighan-Ritchie]The_C_Programming_Language.pdf"
+    },
+    {
+      "id": "concepts-of-programming-languages",
+      "title": "Concepts of Programming Languages",
+      "author": "Robert W. Sebesta · 10th Edition · 816 pages",
+      "file": "books/book.pdf"
+    },
+    {
+      "id": "coding-for-beginners-in-easy-steps",
+      "title": "Coding for Beginners in Easy Steps: Basic Programming for All Ages",
+      "author": "Mike McGrath · 346 pages",
+      "file": "books/coding-for-beginners-in-easy-steps-basic-programming-for-all-ages.pdf"
     }
   ]
 }
