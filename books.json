@@ -905,36 +905,6 @@
       "title": "Introduction to Python Programming",
       "author": "Udayan Das, Aubrey Lawson, Chris Mayfield & Narges Norouzi · OpenStax · 397 pages",
       "file": "books/Introduction_to_Python_Programming-WEB.pdf"
-    },
-    {
-      "id": "principles-of-data-science",
-      "title": "Principles of Data Science",
-      "author": "Shaun V. Ault, Soohyun Nam Liao & Larry Musolino · OpenStax · 285 pages",
-      "file": "books/Principles-of-Data-Science-WEB_part.pdf"
-    },
-    {
-      "id": "the-rooks-guide-to-cplusplus",
-      "title": "The Rook's Guide to C++",
-      "author": "Jeremy A. Hansen · 160 pages",
-      "file": "books/the-rooks-guide-to-cplusplus.pdf"
-    },
-    {
-      "id": "prolog-and-natural-language-analysis",
-      "title": "Prolog and Natural-Language Analysis",
-      "author": "Fernando C. N. Pereira & Stuart M. Shieber · 204 pages",
-      "file": "books/prolog-and-natural-language-analysis.pdf"
-    },
-    {
-      "id": "pc-assembly-language",
-      "title": "PC Assembly Language",
-      "author": "Paul A. Carter · 190 pages",
-      "file": "books/pc-assembly-language.pdf"
-    },
-    {
-      "id": "modern-c",
-      "title": "Modern C",
-      "author": "Jens Gustedt · 438 pages",
-      "file": "books/modern-c.pdf"
     }
   ]
 }
