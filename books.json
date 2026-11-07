@@ -977,6 +977,12 @@
       "title": "Think C++",
       "author": "Allen B. Downey · Version 1.1.0 · 191 pages",
       "file": "books/think-cplusplus.pdf"
+    },
+    {
+      "id": "algorithms-jeff-erickson-2",
+      "title": "Algorithms",
+      "author": "Jeff Erickson · 2019 · 471 pages",
+      "file": "books/algorithms-jeff-erickson(2)-compressed(2).pdf"
     }
   ]
 }
