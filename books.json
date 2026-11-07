@@ -809,6 +809,30 @@
       "title": "How To Code in React.js",
       "author": "Joe Morgan · DigitalOcean · 962 pages",
       "file": "books/how-to-code-in-reactjs.pdf"
+    },
+    {
+      "id": "eloquent-javascript",
+      "title": "Eloquent JavaScript: A Modern Introduction to Programming",
+      "author": "Marijn Haverbeke · 490 pages",
+      "file": "books/Eloquent JavaScript.pdf"
+    },
+    {
+      "id": "javascript-the-first-20-years",
+      "title": "JavaScript: The First 20 Years",
+      "author": "Allen Wirfs-Brock & Brendan Eich · 189 pages",
+      "file": "books/jshopl.pdf"
+    },
+    {
+      "id": "complete-javascript-professional-tips-secrets",
+      "title": "Complete JavaScript: Tips & Secrets for Professionals",
+      "author": "GoalKicker.com · 416 pages",
+      "file": "books/Complete-JavaScript-_-professional-tips-secrets.pdf"
+    },
+    {
+      "id": "elements-of-kotlin",
+      "title": "Elements of Kotlin",
+      "author": "Mark L. Murphy · CommonsWare · 412 pages",
+      "file": "books/elements-of-kotlin.pdf"
     }
   ]
 }
