@@ -62,7 +62,7 @@
   "nodejs-notes-for-professionals": "40e2c0a47e",
   "reactjs-notes-for-professionals": "a785b3aa8f",
   "react-native-notes-for-professionals": "607d47b9f4",
-  "eloquent-javascript": "b19560e5eb",
+  "eloquent-javascript": "68c2174ed0",
   "javascript-notes-for-professionals": "ed02aae2bb",
   "typescript-notes-for-professionals": "ecac91bb1a",
   "python-notes-for-professionals": "1e71d51111",
@@ -124,5 +124,8 @@
   "coding-for-beginners-in-easy-steps": "dbea963e1d",
   "c-for-java-programmers": "b24f573663",
   "how-to-code-in-go": "53b0ccc1ab",
-  "how-to-code-in-reactjs": "7b209d674f"
+  "how-to-code-in-reactjs": "7b209d674f",
+  "javascript-the-first-20-years": "c68693913c",
+  "complete-javascript-professional-tips-secrets": "1ad1bb31d7",
+  "elements-of-kotlin": "569d97a37a"
 }
