@@ -905,6 +905,24 @@
       "title": "Introduction to Python Programming",
       "author": "Udayan Das, Aubrey Lawson, Chris Mayfield & Narges Norouzi · OpenStax · 397 pages",
       "file": "books/Introduction_to_Python_Programming-WEB.pdf"
+    },
+    {
+      "id": "introduction-to-scientific-programming-1",
+      "title": "Introduction to Scientific Programming in C++17/Fortran2008",
+      "author": "Victor Eijkhout · The Art of HPC, Volume 3 · 710 pages",
+      "file": "books/EijkhoutIntroSciProgramming-book-1(1).pdf"
+    },
+    {
+      "id": "an-introduction-to-c-and-gui-programming-1",
+      "title": "An Introduction to C & GUI Programming",
+      "author": "Simon Long · 2nd Edition · 156 pages",
+      "file": "books/an-introduction-to-c-and-gui-programming(1).pdf"
+    },
+    {
+      "id": "algorithms-1",
+      "title": "Algorithms",
+      "author": "Wikibooks.org · 90 pages",
+      "file": "books/algorithms(1).pdf"
     }
   ]
 }
