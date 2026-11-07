@@ -959,6 +959,24 @@
       "title": "Think Complexity",
       "author": "Allen B. Downey · Version 2.6.3 · 227 pages",
       "file": "books/think-complexity.pdf"
+    },
+    {
+      "id": "prolog-and-natural-language-analysis-3",
+      "title": "Prolog and Natural-Language Analysis",
+      "author": "Fernando C. N. Pereira & Stuart M. Shieber · 204 pages",
+      "file": "books/prolog-and-natural-language-analysis(3).pdf"
+    },
+    {
+      "id": "principles-of-data-science-3",
+      "title": "Principles of Data Science",
+      "author": "OpenStax · Shaun V. Ault, Soohyun Nam Liao & Larry Musolino · 285 pages",
+      "file": "books/Principles-of-Data-Science-WEB_part(3).pdf"
+    },
+    {
+      "id": "think-cplusplus-2",
+      "title": "Think C++",
+      "author": "Allen B. Downey · Version 1.1.0 · 191 pages",
+      "file": "books/think-cplusplus(2).pdf"
     }
   ]
 }
