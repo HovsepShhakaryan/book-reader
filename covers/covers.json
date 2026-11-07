@@ -78,7 +78,7 @@
   "ruby-notes-for-professionals": "1d52f1f7fa",
   "ruby-on-rails-notes-for-professionals": "601186cd18",
   "ruby-programming": "e7cce40380",
-  "think-java": "97ab0799c8",
+  "think-java": "6e5dd2982b",
   "into-the-core-tiny-core-linux": "51b1dcdceb",
   "the-little-go-book": "a086a5862d",
   "linux-notes-for-professionals": "811a0ef583",
@@ -127,5 +127,9 @@
   "how-to-code-in-reactjs": "7b209d674f",
   "javascript-the-first-20-years": "c68693913c",
   "complete-javascript-professional-tips-secrets": "1ad1bb31d7",
-  "elements-of-kotlin": "569d97a37a"
+  "elements-of-kotlin": "569d97a37a",
+  "the-rust-programming-language": "4c8bcbb771",
+  "java-java-java": "fbf6bacae2",
+  "programming-with-java": "0c5350da13",
+  "open-data-structures-in-java": "2401d7b6a4"
 }
