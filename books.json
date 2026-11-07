@@ -923,6 +923,24 @@
       "title": "Algorithms",
       "author": "Wikibooks.org · 90 pages",
       "file": "books/algorithms.pdf"
+    },
+    {
+      "id": "pc-assembly-language-1",
+      "title": "PC Assembly Language",
+      "author": "Paul A. Carter · 190 pages",
+      "file": "books/pc-assembly-language.pdf"
+    },
+    {
+      "id": "modern-c-1",
+      "title": "Modern C",
+      "author": "Jens Gustedt · 3rd Edition · 438 pages",
+      "file": "books/modern-c.pdf"
+    },
+    {
+      "id": "the-rooks-guide-to-cplusplus-1",
+      "title": "The Rook's Guide to C++",
+      "author": "Jeremy A. Hansen · 160 pages",
+      "file": "books/the-rooks-guide-to-cplusplus.pdf"
     }
   ]
 }
