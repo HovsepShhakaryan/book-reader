@@ -71,7 +71,7 @@
   "kivy-documentation": "a546697809",
   "django-documentation": "58b8159e10",
   "making-games-with-python-pygame": "43bfe9e5ee",
-  "think-complexity": "fd53b9a378",
+  "think-complexity": "c7d431fe6f",
   "think-stats": "5d21c12604",
   "think-stats-2": "464a1daaaf",
   "secure-programming-howto": "bca5c6831a",
@@ -143,5 +143,7 @@
   "algorithms-1": "e0c34d0dc6",
   "pc-assembly-language-1": "fb59582f92",
   "modern-c-1": "bbfb2d7f3e",
-  "the-rooks-guide-to-cplusplus-1": "912f022d1c"
+  "the-rooks-guide-to-cplusplus-1": "912f022d1c",
+  "the-hitchhikers-guide-to-python": "9174751c7c",
+  "how-to-think-like-a-computer-scientist-cplusplus": "3ea58df958"
 }
