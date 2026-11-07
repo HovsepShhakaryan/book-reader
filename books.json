@@ -941,6 +941,24 @@
       "title": "The Rook's Guide to C++",
       "author": "Jeremy A. Hansen · 160 pages",
       "file": "books/the-rooks-guide-to-cplusplus.pdf"
+    },
+    {
+      "id": "the-hitchhikers-guide-to-python",
+      "title": "The Hitchhiker's Guide to Python: Best Practices for Development",
+      "author": "Kenneth Reitz · 169 pages",
+      "file": "books/the-hitchhikers-guide-to-python-best-practices-for-development.pdf"
+    },
+    {
+      "id": "how-to-think-like-a-computer-scientist-cplusplus",
+      "title": "How to Think Like a Computer Scientist: C++ Version",
+      "author": "Allen B. Downey · 191 pages",
+      "file": "books/how-to-think-like-a-computer-scientist-cplusplus-version.pdf"
+    },
+    {
+      "id": "think-complexity",
+      "title": "Think Complexity",
+      "author": "Allen B. Downey · Version 2.6.3 · 227 pages",
+      "file": "books/think-complexity.pdf"
     }
   ]
 }
