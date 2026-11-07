@@ -46,7 +46,7 @@
   "xamarin-forms-notes-for-professionals": "83e602c604",
   "bash-notes-for-professionals": "7c30d195d4",
   "algorithms-notes-for-professionals": "e63f09b7b2",
-  "dotnet-framework-notes-for-professionals": "21ccf8438f",
+  "dotnet-framework-notes-for-professionals": "c2eca59806",
   "vba-notes-for-professionals": "99f4fb41ba",
   "git-notes-for-professionals": "2e181ebf99",
   "latex-notes-for-professionals": "f5387f6daf",
@@ -135,5 +135,7 @@
   "workplace-software-and-skills": "ed1620f578",
   "foundations-of-information-systems": "a2044ed375",
   "introduction-to-computer-science": "0de69dab83",
-  "the-concise-typescript-book": "12a951593d"
+  "the-concise-typescript-book": "12a951593d",
+  "php-the-right-way": "77276bf5f3",
+  "introduction-to-python-programming": "8026678c40"
 }
