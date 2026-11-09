@@ -166,5 +166,9 @@
   "kubernetes-for-full-stack-developers": "fed23c7f72",
   "structured-query-language": "f5a4c50f44",
   "ai-for-everyone": "08a41f6d6f",
-  "the-little-book-of-deep-learning": "e0d8439c40"
+  "the-little-book-of-deep-learning": "e0d8439c40",
+  "basic-algebra": "d675ce70fd",
+  "introduction-to-sql": "c5f2fc8100",
+  "programming-computer-vision-with-python": "a1de644e97",
+  "python-machine-learning-projects": "6b991f2509"
 }
