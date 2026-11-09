@@ -1091,6 +1091,30 @@
       "title": "The Little Book of Deep Learning",
       "author": "François Fleuret · 189 pages",
       "file": "books/the-little-book-of-deep-learning.pdf"
+    },
+    {
+      "id": "basic-algebra",
+      "title": "Basic Algebra with Applications",
+      "author": "Ivan G. Zaigralin · 513 pages",
+      "file": "books/basic-algebra.pdf"
+    },
+    {
+      "id": "introduction-to-sql",
+      "title": "Introduction to SQL",
+      "author": "Bobby Iliev · 207 pages",
+      "file": "books/introduction-to-sql.pdf"
+    },
+    {
+      "id": "programming-computer-vision-with-python",
+      "title": "Programming Computer Vision with Python",
+      "author": "Jan Erik Solem · 300 pages",
+      "file": "books/ProgrammingComputerVision_CCdraft.pdf"
+    },
+    {
+      "id": "python-machine-learning-projects",
+      "title": "Python Machine Learning Projects",
+      "author": "DigitalOcean · 135 pages",
+      "file": "books/machine-learning-projects-python.pdf"
     }
   ]
 }
