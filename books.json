@@ -1043,6 +1043,30 @@
       "title": "Distant Viewing: Computational Exploration of Digital Images",
       "author": "Taylor Arnold & Lauren Tilton · 287 pages",
       "file": "books/distant-viewing.pdf"
+    },
+    {
+      "id": "neural-networks-and-deep-learning",
+      "title": "Neural Networks and Deep Learning",
+      "author": "Michael Nielsen · 224 pages",
+      "file": "books/neural-networks-and-deep-learning.pdf"
+    },
+    {
+      "id": "a-brief-introduction-to-neural-networks",
+      "title": "A Brief Introduction to Neural Networks",
+      "author": "David Kriesel · 244 pages",
+      "file": "books/neuronalenetze-en-zeta2-2col-dkrieselcom.pdf"
+    },
+    {
+      "id": "introduction-to-data-science-using-python",
+      "title": "Introduction to Data Science Using Python",
+      "author": "Afrand Agah · 117 pages",
+      "file": "books/introduction-to-data-science-using-python.pdf"
+    },
+    {
+      "id": "mathematics-for-computer-science",
+      "title": "Mathematics for Computer Science",
+      "author": "Eric Lehman, F. Thomson Leighton & Albert R. Meyer · 848 pages",
+      "file": "books/LLM.pdf"
     }
   ]
 }
