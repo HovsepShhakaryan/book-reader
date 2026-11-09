@@ -1067,6 +1067,30 @@
       "title": "Mathematics for Computer Science",
       "author": "Eric Lehman, F. Thomson Leighton & Albert R. Meyer · 848 pages",
       "file": "books/LLM.pdf"
+    },
+    {
+      "id": "kubernetes-for-full-stack-developers",
+      "title": "Kubernetes for Full-Stack Developers",
+      "author": "Jamon Camisso, Hanif Jetha & Katherine Juell · 637 pages",
+      "file": "books/kubernetes-for-full-stack-developers.pdf"
+    },
+    {
+      "id": "structured-query-language",
+      "title": "Structured Query Language",
+      "author": "Wikibooks · 121 pages",
+      "file": "books/structured-query-language.pdf"
+    },
+    {
+      "id": "ai-for-everyone",
+      "title": "AI for Everyone? Critical Perspectives",
+      "author": "Pieter Verdegem (Editor) · 310 pages",
+      "file": "books/ai-for-everyone.pdf"
+    },
+    {
+      "id": "the-little-book-of-deep-learning",
+      "title": "The Little Book of Deep Learning",
+      "author": "François Fleuret · 189 pages",
+      "file": "books/the-little-book-of-deep-learning.pdf"
     }
   ]
 }
