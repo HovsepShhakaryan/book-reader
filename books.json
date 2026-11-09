@@ -1115,6 +1115,24 @@
       "title": "Python Machine Learning Projects",
       "author": "DigitalOcean · 135 pages",
       "file": "books/machine-learning-projects-python.pdf"
+    },
+    {
+      "id": "foundations-and-advances-of-machine-learning-in-official-statistics",
+      "title": "Foundations and Advances of Machine Learning in Official Statistics",
+      "author": "Florian Dumpert (Editor) · 383 pages",
+      "file": "books/Foundations and Advances of Machine Learning in Official Statistics_compressed.pdf"
+    },
+    {
+      "id": "r-for-data-science-2nd-edition",
+      "title": "R for Data Science, 2nd Edition",
+      "author": "Hadley Wickham, Mine Çetinkaya-Rundel & Garrett Grolemund · 534 pages",
+      "file": "books/r-for-data-science-2nd-edition_compressed.pdf"
+    },
+    {
+      "id": "understanding-linear-algebra",
+      "title": "Understanding Linear Algebra",
+      "author": "David Austin · 517 pages",
+      "file": "books/Understanding-Linear-Algebra.pdf"
     }
   ]
 }
