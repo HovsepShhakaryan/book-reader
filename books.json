@@ -983,6 +983,24 @@
       "title": "Algorithms",
       "author": "Jeff Erickson · 2019 · 471 pages",
       "file": "books/algorithms-jeff-erickson(2)-compressed.pdf"
+    },
+    {
+      "id": "introduction-to-numerical-methods-javascript",
+      "title": "Introduction to Numerical Methods with examples in Javascript",
+      "author": "D. V. Fedorov · 55 pages",
+      "file": "books/Introduction to Numerical Methods with examples in Javascript.pdf"
+    },
+    {
+      "id": "sql-notes-for-professionals",
+      "title": "SQL Notes for Professionals",
+      "author": "GoalKicker · 166 pages",
+      "file": "books/sql-notes-for-professionals.pdf"
+    },
+    {
+      "id": "dont-get-hacked-protecting-yourself-at-home",
+      "title": "Don’t Get Hacked! Protecting Yourself at Home",
+      "author": "Steven M. Bellovin · 162 pages",
+      "file": "books/Don’t Get Hacked! Protecting Yourself at Home.pdf"
     }
   ]
 }
