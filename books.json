@@ -1025,6 +1025,24 @@
       "title": "Foundations of Large Language Models",
       "author": "Tong Xiao & Jingbo Zhu · 277 pages",
       "file": "books/foundations-of-large-language-models.pdf"
+    },
+    {
+      "id": "discrete-mathematics-an-open-introduction",
+      "title": "Discrete Mathematics: An Open Introduction, 4th Edition",
+      "author": "Oscar Levin · 549 pages",
+      "file": "books/Discrete Mathematics An Open Introduction, 4th Edition.pdf"
+    },
+    {
+      "id": "the-joy-of-cryptography",
+      "title": "The Joy of Cryptography",
+      "author": "Mike Rosulek · 286 pages",
+      "file": "books/the-joy-of-cryptography.pdf"
+    },
+    {
+      "id": "distant-viewing",
+      "title": "Distant Viewing: Computational Exploration of Digital Images",
+      "author": "Taylor Arnold & Lauren Tilton · 287 pages",
+      "file": "books/distant-viewing.pdf"
     }
   ]
 }
