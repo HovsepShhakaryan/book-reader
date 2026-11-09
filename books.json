@@ -1001,6 +1001,30 @@
       "title": "Don’t Get Hacked! Protecting Yourself at Home",
       "author": "Steven M. Bellovin · 162 pages",
       "file": "books/Don’t Get Hacked! Protecting Yourself at Home.pdf"
+    },
+    {
+      "id": "database-design-2nd-edition",
+      "title": "Database Design - 2nd Edition",
+      "author": "Adrienne Watt & Nelson Eng · 136 pages",
+      "file": "books/CS403-1.10-Database-Design-2nd-Edition-CCBY.pdf"
+    },
+    {
+      "id": "rational-cybersecurity-for-business",
+      "title": "Rational Cybersecurity for Business",
+      "author": "Dan Blum · 349 pages",
+      "file": "books/2020_Book_RationalCybersecurityForBusine.pdf"
+    },
+    {
+      "id": "understanding-deep-learning",
+      "title": "Understanding Deep Learning",
+      "author": "Simon J. D. Prince · 541 pages",
+      "file": "books/UnderstandingDeepLearning_24_11_23_C.pdf"
+    },
+    {
+      "id": "foundations-of-large-language-models",
+      "title": "Foundations of Large Language Models",
+      "author": "Tong Xiao & Jingbo Zhu · 277 pages",
+      "file": "books/foundations-of-large-language-models.pdf"
     }
   ]
 }
