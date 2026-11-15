@@ -844,10 +844,21 @@ body.calm #rail { opacity: .35; }
 
   /* ======================= library ======================= */
   var books = [];
+  // the same book listed twice in books.json (same id or same file) is shown only once
+  function uniqueBooks(arr) {
+    var seenId = {}, seenFile = {}, out = [];
+    for (var k = 0; k < arr.length; k++) {
+      var x = arr[k]; if (!x || !x.id) continue;
+      var f = String(x.file || '').toLowerCase();
+      if (seenId[x.id] || (f && seenFile[f])) continue;
+      seenId[x.id] = 1; if (f) seenFile[f] = 1; out.push(x);
+    }
+    return out;
+  }
   function fetchBooks() {
     return fetch('books.json?t=' + Date.now(), { cache: 'no-store' })
       .then(function (r) { if (!r.ok) throw new Error('status ' + r.status); return r.json(); })
-      .then(function (j) { books = (j && j.books) || []; return books; });
+      .then(function (j) { books = uniqueBooks((j && j.books) || []); return books; });
   }
 
   /* ---- covers ----
@@ -2281,7 +2292,7 @@ body.calm #rail { opacity: .35; }
   try {
     savedSig = localStorage.getItem('sb_library');
     var saved = savedSig && JSON.parse(savedSig);
-    if (saved && saved.books && saved.books.length) { books = saved.books; coverMap = saved.covers || {}; }
+    if (saved && saved.books && saved.books.length) { books = uniqueBooks(saved.books); coverMap = saved.covers || {}; }
     else savedSig = null;
   } catch (e) { savedSig = null; }
   function openWanted(final) {
