@@ -463,6 +463,7 @@ body.calm #rail { opacity: .35; }
 .fav.pop, #likeBtn.pop { animation: fav-pop .35s ease; }
 @keyframes fav-pop { 40% { transform: scale(1.3); } }
 .fav:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+@media (hover: hover) { .fav:hover { transform: scale(1.12); background: rgba(20,12,24,.7); } .fav.on:hover { background: #fff; } #list.as-list .fav:hover { background: transparent; } }
 #list.as-list .book { padding-right: 52px; }
 #list.as-list .fav { top: 50%; right: 10px; margin-top: -17px; background: transparent; color: transparent; }
 #list.as-list .fav svg path { stroke: var(--muted); }
@@ -1057,6 +1058,7 @@ body.calm #rail { opacity: .35; }
     var on0 = isLiked(b);
     fav.classList.toggle('on', on0); fav.setAttribute('aria-pressed', String(on0));
     fav.setAttribute('aria-label', on0 ? 'Remove from liked' : 'Add to liked');
+    fav.title = 'Like';
     function hit(e) {
       e.preventDefault(); e.stopPropagation();
       toggleLiked(b);
